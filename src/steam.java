@@ -1,9 +1,5 @@
 package src;
 
-// water (liquid) specific heat is 4.18 j/g°C
-// Q = mc(delta T)
-
-
 public class steam{
     double mass;
     final double SPECIFICHEAT = 1.996;
