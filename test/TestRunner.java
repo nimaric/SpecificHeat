@@ -2,7 +2,11 @@
  * COMPLETELY AI-GENERATED CODE
 */
 
-package src;
+package test;
+
+import src.ice;
+import src.steam;
+import src.waterLiquid;
 
 public class TestRunner {
     public static void main(String[] args) {
