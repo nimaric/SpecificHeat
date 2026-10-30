@@ -2,6 +2,7 @@ package test;
 import org.junit.jupiter.api.Test;
 
 import src.Main;
+import src.ice;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -77,4 +78,99 @@ class MainTest {
         );
     }
 
+    @Test
+    void waterCooling() {
+        double energy = Main.calculateEnergy(250.0, 80.0, 25.0);
+        assertTrue(energy < 0);
+    }
+
+    @Test
+    void iceCooling() {
+        double energy = Main.calculateEnergy(250.0, -5.0, -25.0);
+        assertTrue(energy < 0);
+    }
+
+    @Test
+    void iceHeating() {
+        double energy = Main.calculateEnergy(250.0, -25.0, -5.0);
+        assertTrue(energy > 0);
+    }
+
+    @Test
+    void steamCooling() {
+        double energy = Main.calculateEnergy(250.0, 150.0, 120.0);
+        assertTrue(energy < 0);
+    }
+
+    @Test
+    void steamHeating() {
+        double energy = Main.calculateEnergy(250.0, 120.0, 150.0);
+        assertTrue(energy > 0);
+    }
+    
+    @Test
+    void zeroMass() {
+        double energy = Main.calculateEnergy(0.0, 25.0, 80.0);
+        assertEquals(0.0, energy, 0.0001);
+    }
+
+    @Test
+    void waterHeatingExactResult() {
+        // 250 g of water, 25°C → 80°C
+        double expected = 250.0 * 4.184 * (80.0 - 25.0);
+
+        assertEquals(expected,
+            Main.calculateEnergy(250.0, 25.0, 80.0), 0.001);
+    }
+
+    @Test
+    void waterCoolingExactResult() {
+        // 250 g of water, 80°C → 25°C
+        double expected = 250.0 * 4.184 * (25.0 - 80.0);
+
+        assertEquals(expected,
+            Main.calculateEnergy(250.0, 80.0, 25.0), 0.001);
+    }
+
+    @Test
+    void iceHeatingExactResult() {
+        // 100 g of ice, -20°C → -5°C
+        double expected = 100.0 * 2.108 * (-5.0 - (-20.0));
+
+        assertEquals(expected,
+            Main.calculateEnergy(100.0, -20.0, -5.0), 0.001);
+    }
+
+    @Test
+    void iceCoolingExactResult() {
+        // 100 g of ice, -5°C → -20°C
+        double expected = 100.0 * 2.108 * (-20.0 - (-5.0));
+
+        assertEquals(expected,
+            Main.calculateEnergy(100.0, -5.0, -20.0), 0.001);
+    }
+
+    @Test
+    void steamHeatingExactResult() {
+        // 100 g of steam, 120°C → 150°C
+        double expected = 100.0 * 1.996 * (150.0 - 120.0);
+
+        assertEquals(expected,
+            Main.calculateEnergy(100.0, 120.0, 150.0), 0.001);
+    }
+
+    @Test
+    void steamCoolingExactResult() {
+        // 100 g of steam, 150°C → 120°C
+        double expected = 100.0 * 1.996 * (120.0 - 150.0);
+
+        assertEquals(expected,
+            Main.calculateEnergy(100.0, 150.0, 120.0), 0.001);
+    }
+
+    @Test
+    void iceCoolingClassOnly() {
+        ice testIce = new ice(100.0, -5.0, -20.0);
+        assertEquals(-3162.0, testIce.totalEnergy(), 0.001);
+    }
 }
