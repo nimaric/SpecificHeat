@@ -6,6 +6,7 @@ public class steam{
     double initialTemperature;
     double finalTemperature;
 
+    heatVaporizationWater heatVaporizationWaterObj;
 
     public steam(
         double mass, 
@@ -15,10 +16,17 @@ public class steam{
         this.mass = mass;
         this.initialTemperature = initialTemperature;
         this.finalTemperature = finalTemperature;
+
+        this.heatVaporizationWaterObj = new heatVaporizationWater(mass);
     }
 
     public double totalEnergy()
     {
-        return this.mass * this.SPECIFICHEAT * (this.finalTemperature - this.initialTemperature);
+        double energyToHeat = this.mass * this.SPECIFICHEAT * (this.finalTemperature - this.initialTemperature);
+        if (finalTemperature == 100){
+            double energyToBoil = heatVaporizationWaterObj.totalEnergy();
+            return energyToHeat + energyToBoil;
+        }
+        return energyToHeat;
     }
 }
