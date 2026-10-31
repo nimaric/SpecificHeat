@@ -28,24 +28,6 @@ class MainTest {
     }
 
     @Test
-    void waterToSteam() {
-    double energy = Main.calculateEnergy(250.0, 25.0, 150.0);
-    assertTrue(energy > 0);
-    }
-    
-    @Test
-    void steamToWater() {
-    double energy = Main.calculateEnergy(250.0, 150.0, 25.0);
-    assertTrue(energy < 0);
-    }
-
-    @Test
-    void waterToIce() {
-        double energy = Main.calculateEnergy(250.0, 25.0, -20.0);
-        assertTrue(energy < 0);
-    }
-
-    @Test
     void iceToMeltingPoint() {
         double energy = Main.calculateEnergy(250.0, -20.0, 0.0);
         assertTrue(energy > 0);
@@ -257,6 +239,30 @@ class MainTest {
 
         assertEquals(expected,
             Main.calculateEnergy(mass, 150.0, 25.0), 0.001);
+    }
+
+    @Test
+    void iceToWater() {
+        double energy = Main.calculateEnergy(250.0, -20.0, 20.0);
+        assertTrue(energy > 0, "Melting ice and heating water should absorb energy");
+    }
+
+    @Test
+    void waterToIce() {
+        double energy = Main.calculateEnergy(250.0, 20.0, -20.0);
+        assertTrue(energy < 0, "Cooling water and freezing it should release energy");
+    }
+
+    @Test
+    void waterToSteam() {
+        double energy = Main.calculateEnergy(250.0, 25.0, 150.0);
+        assertTrue(energy > 0, "Heating water and vaporizing it should absorb energy");
+    }
+
+    @Test
+    void steamToWater() {
+        double energy = Main.calculateEnergy(250.0, 150.0, 25.0);
+        assertTrue(energy < 0, "Cooling steam and condensing it should release energy");
     }
 
 }
