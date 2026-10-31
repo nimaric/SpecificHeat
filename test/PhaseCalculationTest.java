@@ -33,6 +33,15 @@ class PhaseCalculationTest {
     }
 
     @Test
+    void iceToZero() {
+        assertEquals(
+            94040.0,
+            Main.calculateEnergy(MASS, -20.0, 0.0),
+            TOLERANCE
+        );
+    }
+
+    @Test
     void waterHeating() {
         WaterLiquid water = new WaterLiquid(100.0, 20.0, 80.0);
 
@@ -113,6 +122,60 @@ class PhaseCalculationTest {
         double cooling = Main.calculateEnergy(MASS, 150.0, 25.0);
 
         assertEquals(-heating, cooling, TOLERANCE);
+    }
+
+    @Test
+    void zeroToWater() {
+        assertEquals(
+            104420.0,
+            Main.calculateEnergy(MASS, 0.0, 20.0),
+            TOLERANCE
+        );
+    }
+
+    @Test
+    void zeroToBoilingPoint() {
+        assertEquals(
+            753100.0,
+            Main.calculateEnergy(MASS, 0.0, 100.0),
+            TOLERANCE
+        );
+    }
+
+    @Test
+    void waterToZero() {
+        assertEquals(
+            -109650.0,
+            Main.calculateEnergy(MASS, 25.0, 0.0),
+            TOLERANCE
+        );
+    }
+
+    @Test
+    void boilingPointToWater() {
+        assertEquals(
+            -585920.0,
+            Main.calculateEnergy(MASS, 100.0, 80.0),
+            TOLERANCE
+        );
+    }
+
+    @Test
+    void sameTemperature() {
+        assertEquals(
+            0.0,
+            Main.calculateEnergy(MASS, 25.0, 25.0),
+            TOLERANCE
+        );
+    }
+
+    @Test
+    void boilingPointToSteam() {
+        assertEquals(
+            589950.0,
+            Main.calculateEnergy(MASS, 100.0, 150.0),
+            TOLERANCE
+        );
     }
 
 }
