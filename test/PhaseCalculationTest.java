@@ -1,3 +1,8 @@
+/*
+ * Test cases developed with assistance from ChatGPT (OpenAI).
+ * Reviewed and maintained by the project author.
+ */
+
 package test;
 
 import org.junit.jupiter.api.Test;
