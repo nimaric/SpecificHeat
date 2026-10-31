@@ -1,16 +1,14 @@
 package src;
 
 public class HeatVaporizationWater {
-    double mass;
-    final double VAPORIZATIONJOULES = 2260.0; // Joules
+    private final double mass;
+    private static final double VAPORIZATION_JOULES_PER_GRAM = 2260.0;
 
-    public HeatVaporizationWater(
-        double mass
-    ){
+    public HeatVaporizationWater(double mass) {
         this.mass = mass;
     }
 
-    public double totalEnergy(){
-        return mass * VAPORIZATIONJOULES;
+    public double totalEnergy() {
+        return mass * VAPORIZATION_JOULES_PER_GRAM;
     }
 }
