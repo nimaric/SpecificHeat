@@ -8,6 +8,9 @@ public class HeatFusionWater {
         if (mass < 0) {
             throw new IllegalArgumentException("Mass cannot be negative.");
         }
+        if (!Double.isFinite(mass)){
+            throw new IllegalArgumentException("Mass cannot be NaN (Not a Number) or Infinity.");
+        }
 
         this.mass = mass;
     }
