@@ -159,6 +159,14 @@ The calculator currently includes phase-specific energy calculations, latent hea
 - Review the model's treatment of starting and ending states at 0°C and 100°C.
 - Improve diagnostic output and general code maintainability.
 
-## Acknowledgments
+## License
 
-The README documentation was generated with assistance from ChatGPT (OpenAI) and reviewed by the project author for accuracy. The project is an ongoing learning exercise in Java programming, object-oriented design, and automated testing.
+SpecificHeat is licensed under the **GNU General Public License v3.0 or later (GPL-3.0-or-later)**.
+
+You are free to use, study, modify, and redistribute this software under the terms of the license. If you distribute this software or derivative works covered by the GPL, you must comply with its applicable terms, including the requirements concerning source code availability.
+
+See the [`LICENSE`](LICENSE) file for the full license text.
+
+### AI Assistance
+
+Parts of this project, including documentation and tests, were developed with assistance from ChatGPT. The project author reviewed the generated content and remains responsible for the project's design, implementation, and maintenance.
