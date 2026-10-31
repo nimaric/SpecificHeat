@@ -16,12 +16,12 @@ public class Main{
 
         if (massInGrams < 0) {
             System.out.println("SYSTEM VALIDATION: FAILED (1) Negative Mass");
-            throw new IllegalArgumentException("Mass cannot be negative!");
+            throw new IllegalArgumentException("Mass cannot be negative.");
         }
         // Check if the temperature goes below Absolute Zero
         if (-273.15 > initialTemperatureCelsius || -273.15 > finalTemperatureCelsius){
             System.out.println("SYSTEM VALIDATION: FAILED (2) Absolute Zero");
-            throw new IllegalArgumentException("Celsius cannot go below Absolute Zero (-273.15)!");
+            throw new IllegalArgumentException("Temperature cannot be below absolute zero (-273.15).");
         }
 
         System.out.println("SYSTEM VALIDATION: PASSED");
