@@ -22,11 +22,6 @@ public class steam{
 
     public double totalEnergy()
     {
-        double energyToHeat = this.mass * this.SPECIFICHEAT * (this.finalTemperature - this.initialTemperature);
-        if (finalTemperature == 100){
-            double energyToBoil = heatVaporizationWaterObj.totalEnergy();
-            return energyToHeat + energyToBoil;
-        }
-        return energyToHeat;
+        return this.mass * this.SPECIFICHEAT * (this.finalTemperature - this.initialTemperature);
     }
 }

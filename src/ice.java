@@ -22,11 +22,6 @@ public class ice{
 
     public double totalEnergy()
     {
-        double energyToHeat = this.mass * this.SPECIFICHEAT * (this.finalTemperature - this.initialTemperature);
-        if (finalTemperature == 0) {
-            double energyToMelting = heatFusionWaterObj.totalEnergy();
-            return energyToHeat + energyToMelting;
-        }
-        return energyToHeat;
+        return this.mass * this.SPECIFICHEAT * (this.finalTemperature - this.initialTemperature);
     }
 }
