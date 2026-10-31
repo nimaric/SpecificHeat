@@ -1,14 +1,12 @@
 package src;
 
-public class ice{
-    double mass;
-    final double SPECIFICHEAT = 2.108;
-    double initialTemperature;
-    double finalTemperature;
+public class Ice{
+    private double mass;
+    private final double SPECIFICHEAT = 2.108;
+    private double initialTemperature;
+    private double finalTemperature;
 
-    heatFusionWater heatFusionWaterObj;
-
-    public ice(
+    public Ice(
         double mass, 
         double initialTemperature, 
         double finalTemperature
@@ -16,12 +14,12 @@ public class ice{
         this.mass = mass;
         this.initialTemperature = initialTemperature;
         this.finalTemperature = finalTemperature;
-
-        this.heatFusionWaterObj = new heatFusionWater(mass);
     }
 
     public double totalEnergy()
     {
-        return this.mass * this.SPECIFICHEAT * (this.finalTemperature - this.initialTemperature);
+        return this.mass * 
+        this.SPECIFICHEAT * 
+        (this.finalTemperature - this.initialTemperature);
     }
 }

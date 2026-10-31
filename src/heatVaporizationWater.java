@@ -1,10 +1,10 @@
 package src;
 
-public class heatVaporizationWater {
+public class HeatVaporizationWater {
     double mass;
     final double VAPORIZATIONJOULES = 2260.0; // Joules
 
-    public heatVaporizationWater(
+    public HeatVaporizationWater(
         double mass
     ){
         this.mass = mass;

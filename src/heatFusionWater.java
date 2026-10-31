@@ -1,11 +1,11 @@
 package src;
 
-public class heatFusionWater {
+public class HeatFusionWater {
     double mass;
     final double FUSIONJOULES = 334.0;
     final double FUSIONCALORIES = 79.72;
 
-    public heatFusionWater(
+    public HeatFusionWater(
         double mass
     ){
         this.mass = mass;
