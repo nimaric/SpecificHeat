@@ -9,7 +9,7 @@ SpecificHeat calculates thermal energy changes involving three phases of water:
 - **Ice:** Calculates sensible heat changes using the specific heat capacity of ice.
 - **Liquid water:** Calculates sensible heat changes using the specific heat capacity of liquid water.
 - **Steam:** Calculates sensible heat changes using the specific heat capacity of steam.
-- **Phase transitions:** Accounts for latent heat during melting, freezing, vaporization, and condensation.
+- **Phase transitions:** Accounts for latent heat associated with melting, freezing, vaporization, and condensation.
 
 The calculator uses positive energy values for energy absorbed and negative values for energy released.
 
@@ -24,6 +24,7 @@ Q = mc\Delta T
 \]
 
 Where:
+
 - \(Q\) = thermal energy transferred (J)
 - \(m\) = mass (g)
 - \(c\) = specific heat capacity (J/(g·°C))
@@ -38,10 +39,11 @@ Q = mL
 \]
 
 Where:
+
 - \(m\) = mass (g)
 - \(L\) = specific latent heat (J/g)
 
-Melting and vaporization absorb energy, while freezing and condensation release energy.
+Melting and vaporization absorb energy, while freezing and condensation release energy. The sign of the energy contribution depends on the direction of the transition.
 
 ### Physical Constants
 
@@ -53,16 +55,22 @@ Melting and vaporization absorb energy, while freezing and condensation release 
 | Latent heat of fusion | 334 J/g |
 | Latent heat of vaporization | 2260 J/g |
 
-## Temperature Boundaries
+## Temperature Boundaries and Model Assumptions
 
-- **0°C:** Boundary between ice and liquid water; the calculator applies latent heat of fusion.
-- **100°C:** Boundary between liquid water and steam; the calculator applies latent heat of vaporization.
+The calculator uses 0°C and 100°C as phase-transition boundaries for water under a standard-pressure model.
+
+- **0°C — Fusion and freezing:** When the temperature reaches 0°C, latent heat of fusion is added when transitioning from ice to liquid water and subtracted when transitioning from liquid water to ice.
+- **100°C — Vaporization and condensation:** When the temperature reaches 100°C, latent heat of vaporization is added when transitioning from liquid water to steam and subtracted when transitioning from steam to liquid water.
+
+The calculator determines energy contributions using the initial and final temperatures and applies latent heat according to the direction of the temperature transition. It does not currently accept the initial and final states of matter as explicit inputs. Therefore, exact-boundary cases follow the calculator's custom convention, which simplifies phase-transition calculations but may differ from the physical behavior of a substance whose phase is already known.
+
+A future improvement may introduce explicit phase-state information to distinguish cases that cannot be determined from temperature alone.
 
 ## Project Structure
 
 | Class | Responsibility |
 |---|---|
-| `Main` | Coordinates calculations based on mass and initial and final temperatures. |
+| `Main` | Validates inputs, coordinates energy calculations, and combines the contributions from each phase and phase transition. |
 | `Ice` | Calculates sensible heat changes for ice. |
 | `WaterLiquid` | Calculates sensible heat changes for liquid water. |
 | `Steam` | Calculates sensible heat changes for steam. |
@@ -74,7 +82,11 @@ Melting and vaporization absorb energy, while freezing and condensation release 
 The main calculation method is:
 
 ```java
-Main.calculateEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
+Main.calculateEnergy(
+    massInGrams,
+    initialTemperatureCelsius,
+    finalTemperatureCelsius
+);
 ```
 
 ### Example
@@ -88,7 +100,7 @@ This example calculates the energy required to heat 250 grams of liquid water fr
 
 - A positive result indicates energy absorbed.
 - A negative result indicates energy released.
-- A result of zero indicates no net energy transfer.
+- A result of zero indicates no net energy transfer under the model.
 
 ## Input Validation
 
@@ -99,22 +111,24 @@ The calculator rejects invalid inputs, including:
 - `NaN` values.
 - Positive or negative infinity.
 
-Zero mass is not considered negative and may be used as a valid input.
+Zero mass is permitted and produces zero energy for otherwise valid inputs.
 
 ## Testing
 
 The project uses JUnit 5 for automated testing.
 
-The test suite covers calculations and validation, including:
+**Current test status: 42/42 tests passing.**
+
+The test suite covers:
 
 - Heating and cooling within individual phases.
 - Transitions between phases.
 - Energy absorbed and released.
-- Reversibility of temperature and phase changes.
+- Reverse temperature and phase changes.
 - Invalid numerical inputs.
 - Phase-transition boundaries.
 
-Additional tests are being developed to strengthen boundary coverage and verify phase-transition calculations.
+Passing tests confirm that the implementation matches the expectations encoded in the test suite. Additional review of overlapping conditions and exact-boundary behavior remains useful as the calculation logic evolves.
 
 ## Technologies
 
@@ -123,7 +137,7 @@ Additional tests are being developed to strengthen boundary coverage and verify 
 - **Distribution:** Eclipse Temurin
 - **Testing framework:** JUnit 5
 
-Runtime environment:
+Runtime environment used during development:
 
 ```text
 OpenJDK 17.0.16
@@ -135,15 +149,15 @@ Eclipse Temurin 17.0.16+8
 
 **In development.**
 
-The project is being refined through automated testing, input validation, and improvements to phase-transition calculations.
+The calculator currently includes phase-specific energy calculations, latent heat calculations, input validation, and an automated test suite. Development is focused on improving the clarity, maintainability, and reliability of the calculation logic.
 
 ## Future Improvements
 
-- Expand phase-transition boundary tests.
-- Strengthen numerical edge-case handling.
-- Improve the organization of phase-transition logic.
-- Reduce duplicated conditional logic.
-- Expand automated test coverage.
+- Simplify overlapping conditional logic.
+- Improve the organization and reuse of phase-transition calculations.
+- Expand testing for exact-boundary and numerical edge cases.
+- Review the model's treatment of starting and ending states at 0°C and 100°C.
+- Improve diagnostic output and general code maintainability.
 
 ## Acknowledgments
 
