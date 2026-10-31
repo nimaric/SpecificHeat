@@ -73,7 +73,7 @@ public class Main{
             return iceEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
         }
 
-        if (initialTemperatureCelsius < 0 && finalTemperatureCelsius >= 0 && finalTemperatureCelsius < 100){
+        if (initialTemperatureCelsius <= 0 && finalTemperatureCelsius >= 0 && finalTemperatureCelsius < 100){
             System.out.println("ICE CALCULATIONS: ONLY ICE TO WATER (2)\n");
 
             return iceEnergy(massInGrams, initialTemperatureCelsius, 0)
@@ -81,15 +81,15 @@ public class Main{
             + liquidEnergy(massInGrams, 0, finalTemperatureCelsius);
             
         } else if (initialTemperatureCelsius >= 0 && initialTemperatureCelsius < 100 && finalTemperatureCelsius < 0){
-            System.out.println("ICE CALCULATIONS: ONLY WATER TO ICE (3)\n");
+            System.out.println("WATER CALCULATIONS: ONLY WATER TO ICE (ICE_UNIQUE_3)\n");
 
             return liquidEnergy(massInGrams, initialTemperatureCelsius, 0)
             - heatFusionEnergy(massInGrams)
             + iceEnergy(massInGrams, 0, finalTemperatureCelsius);
         }
 
-        if (initialTemperatureCelsius < 0 && finalTemperatureCelsius >= 100){
-            System.out.println("ICE CALCULATIONS: ONLY ICE TO STEAM (3)\n");
+        if (initialTemperatureCelsius <= 0 && finalTemperatureCelsius >= 100){
+            System.out.println("ICE CALCULATIONS: ONLY ICE TO STEAM (4)\n");
 
             return iceEnergy(massInGrams, initialTemperatureCelsius, 0) // Q_ice
             + heatFusionEnergy(massInGrams) // Q_Hf
@@ -98,7 +98,7 @@ public class Main{
             + steamEnergy(massInGrams, 100, finalTemperatureCelsius); // Q_steam  
 
         } else if (initialTemperatureCelsius >= 100 && finalTemperatureCelsius < 0){
-            System.out.println("STEAM CALCULATIONS: ONLY STEAM TO ICE (ICE_UNIQUE_4)\n");
+            System.out.println("STEAM CALCULATIONS: ONLY STEAM TO ICE (ICE_UNIQUE_5)\n");
 
             return steamEnergy(massInGrams, initialTemperatureCelsius, 100) // Q_steam  
             - heatVaporizationEnergy(massInGrams)
@@ -112,8 +112,9 @@ public class Main{
         if (initialTemperatureCelsius > 0 
             && initialTemperatureCelsius < 100 
             && finalTemperatureCelsius < 100
+            && finalTemperatureCelsius > 0
         ){
-            System.out.println("STEAM CALCULATIONS: ONLY WATER (1)\n");
+            System.out.println("WATER CALCULATIONS: ONLY WATER (1)\n");
             
             return liquidEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
         }
@@ -122,7 +123,7 @@ public class Main{
             && initialTemperatureCelsius <= 100 
             && finalTemperatureCelsius >= 100
         ){
-            System.out.println("STEAM CALCULATIONS: ONLY WATER TO STEAM (2)\n");
+            System.out.println("WATER CALCULATIONS: ONLY WATER TO STEAM (2)\n");
 
             return liquidEnergy(massInGrams, initialTemperatureCelsius, 100) 
             + steamEnergy(massInGrams, 100, finalTemperatureCelsius)
@@ -132,11 +133,22 @@ public class Main{
             && finalTemperatureCelsius < 100 
             && initialTemperatureCelsius >= 100
         ){
-            System.out.println("STEAM CALCULATIONS: ONLY STEAM TO WATER (3)\n");
+            System.out.println("STEAM CALCULATIONS: ONLY STEAM TO WATER (WATER_UNIQUE_3)\n");
 
             return  steamEnergy(massInGrams, initialTemperatureCelsius, 100)
             - heatVaporizationEnergy(massInGrams) 
             + liquidEnergy(massInGrams, 100, finalTemperatureCelsius);
+        }
+
+        if (initialTemperatureCelsius > 0 
+            && initialTemperatureCelsius < 100 
+            && finalTemperatureCelsius < 100
+            && finalTemperatureCelsius <= 0
+        ){
+            System.out.println("WATER CALCULATIONS: ONLY WATER TO ICE (4)\n");
+            
+            return liquidEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius)
+            - heatFusionEnergy(massInGrams);
         }
 
         System.out.println("WATER CALCULATIONS: INAPPLICABLE");
