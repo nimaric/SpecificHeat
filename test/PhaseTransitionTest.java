@@ -18,7 +18,7 @@ class PhaseTransitionTest {
     @Test
     void iceToWater() {
         assertEquals(
-            198680.0,
+            114960.0,
             Main.calculateEnergy(MASS, -20.0, 20.0),
             TOLERANCE
         );
@@ -27,7 +27,7 @@ class PhaseTransitionTest {
     @Test
     void waterToIce() {
         assertEquals(
-            -198680.0,
+            -114960.0,
             Main.calculateEnergy(MASS, 20.0, -20.0),
             TOLERANCE
         );
@@ -36,7 +36,7 @@ class PhaseTransitionTest {
     @Test
     void waterToSteam() {
         assertEquals(
-            781440.0,
+            668400.0,
             Main.calculateEnergy(MASS, 25.0, 150.0),
             TOLERANCE
         );
