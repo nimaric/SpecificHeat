@@ -37,12 +37,12 @@ public class Main{
             return iceObject.totalEnergy();
         }
 
-        if (initialTemperatureCelsius < 0 && finalTemperatureCelsius >= 0){
+        if (initialTemperatureCelsius < 0 && finalTemperatureCelsius >= 0 && finalTemperatureCelsius < 100){
             Ice iceObject = new Ice(massInGrams, 
                 initialTemperatureCelsius, 
                 0
             ); // Q_ice
-            HeatFusionWaterObj = new HeatFusionWater(massInGrams); // Q_hF
+            HeatFusionWaterObj = new HeatFusionWater(massInGrams); // Q_Hf
             WaterLiquid liquidObject = new WaterLiquid(
                 massInGrams, 
                 0, 
@@ -55,13 +55,13 @@ public class Main{
             + liquidObject.totalEnergy()
             + HeatFusionWaterObj.totalEnergy();
             
-        } else if (initialTemperatureCelsius >= 0 && finalTemperatureCelsius < 0){
+        } else if (initialTemperatureCelsius >= 0 && initialTemperatureCelsius < 100 && finalTemperatureCelsius < 0){
             WaterLiquid liquidObject = new WaterLiquid(
                 massInGrams, 
                 initialTemperatureCelsius,
                 0
             ); // Q_water
-            HeatFusionWaterObj = new HeatFusionWater(massInGrams); // Q_hF
+            HeatFusionWaterObj = new HeatFusionWater(massInGrams); // Q_Hf
             Ice iceObject = new Ice(
                 massInGrams,
                 0,
@@ -73,6 +73,39 @@ public class Main{
             liquidObject.totalEnergy()
             + -HeatFusionWaterObj.totalEnergy()
             + iceObject.totalEnergy();
+        }
+
+        if (initialTemperatureCelsius < 0 && finalTemperatureCelsius >= 100){
+            Ice iceObject = new Ice(massInGrams, initialTemperatureCelsius, 0); // Q_ice
+            HeatFusionWaterObj = new HeatFusionWater(massInGrams); // Q_Hf
+            WaterLiquid liquidObject = new WaterLiquid(massInGrams, 0, 100); // Q_water
+            HeatVaporizationObj = new HeatVaporizationWater(massInGrams); // Q_Hv
+            Steam steamObject = new Steam(massInGrams, 100, finalTemperatureCelsius); // Q_steam
+
+            System.out.println("ICE CALCULATIONS: ONLY ICE TO STEAM (3)\n");
+
+            return 
+            iceObject.totalEnergy() // Q_ice
+            + HeatFusionWaterObj.totalEnergy() // Q_Hf
+            + liquidObject.totalEnergy() // Q_water
+            + HeatVaporizationObj.totalEnergy() // Q_Hv
+            + steamObject.totalEnergy(); // Q_steam  
+
+        } else if (initialTemperatureCelsius >= 100 && finalTemperatureCelsius < 0){
+            Steam steamObject = new Steam(massInGrams, initialTemperatureCelsius, 100); // Q_steam
+            HeatVaporizationObj = new HeatVaporizationWater(massInGrams); // Q_Hv
+            WaterLiquid liquidObject = new WaterLiquid(massInGrams, 100, 0); // Q_water
+            HeatFusionWaterObj = new HeatFusionWater(massInGrams); // Q_Hf
+            Ice iceObject = new Ice(massInGrams, 0, finalTemperatureCelsius); // Q_ice
+
+            System.out.println("STEAM CALCULATIONS: ONLY STEAM TO ICE (ICE_UNIQUE_4)\n");
+
+            return 
+            iceObject.totalEnergy() // Q_ice
+            - HeatFusionWaterObj.totalEnergy() // Q_Hf
+            + liquidObject.totalEnergy() // Q_water
+            - HeatVaporizationObj.totalEnergy() // Q_Hv
+            + steamObject.totalEnergy(); // Q_steam  
         }
 
         System.out.println("ICE CALCULATIONS: INAPPLICABLE");
