@@ -8,7 +8,7 @@
 package src;
 
 public class WaterLiquid{
-    private final double mass;
+    private final double mass; // measured in grams
     private static final double SPECIFIC_HEAT = 4.184;
     private final double initialTemperature;
     private final double finalTemperature;

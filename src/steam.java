@@ -8,7 +8,7 @@
 package src;
 
 public class Steam{
-    private final double mass;
+    private final double mass; // measured in grams
     private static final double SPECIFIC_HEAT = 1.996;
     private final double initialTemperature;
     private final double finalTemperature;
