@@ -6,6 +6,10 @@ public class HeatVaporizationWater {
 
     public HeatVaporizationWater(double mass) {
         this.mass = mass;
+        
+        if (mass < 0) {
+            throw new IllegalArgumentException("Mass cannot be negative.");
+        }
     }
 
     public double totalEnergy() {
