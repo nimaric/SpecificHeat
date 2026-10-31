@@ -3,6 +3,7 @@ import org.junit.jupiter.api.Test;
 
 import src.Main;
 import src.ice;
+import src.steam;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -172,5 +173,29 @@ class MainTest {
     void iceCoolingClassOnly() {
         ice testIce = new ice(100.0, -5.0, -20.0);
         assertEquals(-3162.0, testIce.totalEnergy(), 0.001);
+    }
+    
+    @Test
+    void steamHeatingByOneDegree() {
+        // 100 g of steam, 120°C → 121°C
+        steam testSteam = new steam(100.0, 120.0, 121.0);
+
+    assertEquals(199.6, testSteam.totalEnergy(), 0.001);
+    }
+
+    @Test
+    void steamCoolingByOneDegree() {
+        // 100 g of steam, 121°C → 120°C
+        steam testSteam = new steam(100.0, 121.0, 120.0);
+
+    assertEquals(-199.6, testSteam.totalEnergy(), 0.001);
+    }
+
+    @Test
+    void steamNoTemperatureChange() {
+        // 250 g of steam, 150°C → 150°C
+        steam testSteam = new steam(250.0, 150.0, 150.0);
+
+    assertEquals(0.0, testSteam.totalEnergy(), 0.001);
     }
 }
