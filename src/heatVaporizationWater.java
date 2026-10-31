@@ -8,7 +8,7 @@
 package src;
 
 public class HeatVaporizationWater {
-    private final double mass;
+    private final double mass; // measured in grams
     private static final double VAPORIZATION_JOULES_PER_GRAM = 2260.0;
 
     public HeatVaporizationWater(double mass) {
