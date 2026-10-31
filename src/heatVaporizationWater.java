@@ -1,3 +1,10 @@
+/*
+ * SpecificHeat - Java-based thermal energy calculator
+ * Copyright (C) 2026 Aldine Dane Fabro
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package src;
 
 public class HeatVaporizationWater {
