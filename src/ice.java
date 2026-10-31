@@ -1,16 +1,22 @@
 package src;
 
 public class Ice{
-    private double mass;
-    private final double SPECIFICHEAT = 2.108;
-    private double initialTemperature;
-    private double finalTemperature;
+    private final double mass;
+    private static final double SPECIFIC_HEAT = 2.108;
+    private final double initialTemperature;
+    private final double finalTemperature;
 
-    public Ice(
-        double mass, 
-        double initialTemperature, 
-        double finalTemperature
-    ) {
+    public Ice(double mass, double initialTemperature, double finalTemperature) {
+        if (mass < 0) {
+            throw new IllegalArgumentException("Mass cannot be negative.");
+        }
+
+        if (initialTemperature < -273.15 || finalTemperature < -273.15) {
+            throw new IllegalArgumentException(
+                "Temperature cannot be below absolute zero (-273.15)."
+            );
+        }
+
         this.mass = mass;
         this.initialTemperature = initialTemperature;
         this.finalTemperature = finalTemperature;
@@ -19,7 +25,7 @@ public class Ice{
     public double totalEnergy()
     {
         return this.mass * 
-        this.SPECIFICHEAT * 
+        SPECIFIC_HEAT * 
         (this.finalTemperature - this.initialTemperature);
     }
 }
