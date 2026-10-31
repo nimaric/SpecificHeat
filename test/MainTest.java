@@ -174,7 +174,7 @@ class MainTest {
         ice testIce = new ice(100.0, -5.0, -20.0);
         assertEquals(-3162.0, testIce.totalEnergy(), 0.001);
     }
-    
+
     @Test
     void steamHeatingByOneDegree() {
         // 100 g of steam, 120°C → 121°C
@@ -198,4 +198,65 @@ class MainTest {
 
     assertEquals(0.0, testSteam.totalEnergy(), 0.001);
     }
+
+    @Test
+    void waterReachesBoilingPoint() {
+        // Liquid water heats from 25°C to 100°C.
+        double mass = 250.0;
+        double expected = mass * 4.184 * (100.0 - 25.0);
+
+        assertEquals(expected,
+            Main.calculateEnergy(mass, 25.0, 100.0), 0.001);
+    }
+
+    @Test
+    void waterHeatsIntoSteam() {
+        // Liquid water at 100°C → steam at 150°C.
+        double mass = 250.0;
+        double latentHeatVaporization = 2260.0; // J/g; adjust to your constant
+        double expected =
+            mass * latentHeatVaporization
+            + mass * 1.996 * (150.0 - 100.0);
+
+        assertEquals(expected,
+            Main.calculateEnergy(mass, 100.0, 150.0), 0.001);
+    }
+
+    @Test
+    void steamCoolsToBoilingPoint() {
+        // Steam cools from 150°C to 100°C without condensing.
+        double mass = 250.0;
+        double expected = mass * 1.996 * (100.0 - 150.0);
+
+        assertEquals(expected,
+            Main.calculateEnergy(mass, 150.0, 100.0), 0.001);
+    }
+
+    @Test
+    void steamCoolsAndCondenses() {
+        // Steam at 150°C → liquid water at 100°C.
+        double mass = 250.0;
+        double latentHeatVaporization = 2260.0; // J/g; adjust to your constant
+        double expected =
+            mass * 1.996 * (100.0 - 150.0) +
+            (- mass) * latentHeatVaporization;
+
+        assertEquals(expected,
+            Main.calculateEnergy(mass, 150.0, 100.0), 0.001);
+    }
+
+    @Test
+    void steamCoolsIntoLiquidWater() {
+        // Steam at 150°C → liquid water at 25°C.
+        double mass = 250.0;
+        double latentHeatVaporization = 2260.0; // J/g; adjust to your constant
+        double expected =
+            mass * 1.996 * (100.0 - 150.0) +
+            (- mass) * latentHeatVaporization
+            + mass * 4.184 * (25.0 - 100.0);
+
+        assertEquals(expected,
+            Main.calculateEnergy(mass, 150.0, 25.0), 0.001);
+    }
+
 }
