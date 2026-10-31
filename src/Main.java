@@ -15,13 +15,21 @@ public class Main{
         HeatVaporizationWater HeatVaporizationObj;
 
         if (massInGrams < 0) {
-            System.out.println("SYSTEM VALIDATION: FAILED (1) Negative Mass");
+            System.out.println("SYSTEM VALIDATION: FAILED (1) Negative Mass\n");
             throw new IllegalArgumentException("Mass cannot be negative.");
         }
         // Check if the temperature goes below Absolute Zero
         if (-273.15 > initialTemperatureCelsius || -273.15 > finalTemperatureCelsius){
-            System.out.println("SYSTEM VALIDATION: FAILED (2) Absolute Zero");
+            System.out.println("SYSTEM VALIDATION: FAILED (2) Absolute Zero\n");
             throw new IllegalArgumentException("Temperature cannot be below absolute zero (-273.15).");
+        }
+        if (!Double.isFinite(massInGrams)){
+            System.out.println("SYSTEM VALIDATION: FAILED (3) NaN / Not a Number\n");
+            throw new IllegalArgumentException("Mass cannot be NaN (Not a Number) or Infinity.");
+        }
+        if (!Double.isFinite(initialTemperatureCelsius) || !Double.isFinite(finalTemperatureCelsius)){
+            System.out.println("SYSTEM VALIDATION: FAILED (3) NaN / Not a Number\n");
+            throw new IllegalArgumentException("Temperature cannot be NaN (Not a Number) or Infinity.");
         }
 
         System.out.println("SYSTEM VALIDATION: PASSED");
