@@ -11,8 +11,8 @@ public class Main{
         System.out.println("T_i: " + initialTemperatureCelsius);
         System.out.println("T_f: " + finalTemperatureCelsius);
 
-        heatFusionWater heatFusionWaterObj;
-        heatVaporizationWater heatVaporizationObj;
+        HeatFusionWater HeatFusionWaterObj;
+        HeatVaporizationWater HeatVaporizationObj;
 
         if (massInGrams < 0) {
             System.out.println("SYSTEM VALIDATION: FAILED (1) Negative Mass");
@@ -27,7 +27,7 @@ public class Main{
         System.out.println("SYSTEM VALIDATION: PASSED");
 
         if (initialTemperatureCelsius < 0 && finalTemperatureCelsius < 0){
-            ice iceObject = new ice(
+            Ice iceObject = new Ice(
                 massInGrams, 
                 initialTemperatureCelsius, 
                 finalTemperatureCelsius
@@ -38,12 +38,12 @@ public class Main{
         }
 
         if (initialTemperatureCelsius < 0 && finalTemperatureCelsius >= 0){
-            ice iceObject = new ice(massInGrams, 
+            Ice iceObject = new Ice(massInGrams, 
                 initialTemperatureCelsius, 
                 0
             ); // Q_ice
-            heatFusionWaterObj = new heatFusionWater(massInGrams); // Q_hF
-            waterLiquid liquidObject = new waterLiquid(
+            HeatFusionWaterObj = new HeatFusionWater(massInGrams); // Q_hF
+            WaterLiquid liquidObject = new WaterLiquid(
                 massInGrams, 
                 0, 
                 finalTemperatureCelsius
@@ -53,16 +53,16 @@ public class Main{
             return 
             iceObject.totalEnergy()
             + liquidObject.totalEnergy()
-            + heatFusionWaterObj.totalEnergy();
+            + HeatFusionWaterObj.totalEnergy();
             
         } else if (initialTemperatureCelsius >= 0 && finalTemperatureCelsius < 0){
-            waterLiquid liquidObject = new waterLiquid(
+            WaterLiquid liquidObject = new WaterLiquid(
                 massInGrams, 
                 initialTemperatureCelsius,
                 0
             ); // Q_water
-            heatFusionWaterObj = new heatFusionWater(massInGrams); // Q_hF
-            ice iceObject = new ice(
+            HeatFusionWaterObj = new HeatFusionWater(massInGrams); // Q_hF
+            Ice iceObject = new Ice(
                 massInGrams,
                 0,
                 finalTemperatureCelsius
@@ -71,7 +71,7 @@ public class Main{
 
             return 
             liquidObject.totalEnergy()
-            + -heatFusionWaterObj.totalEnergy()
+            + -HeatFusionWaterObj.totalEnergy()
             + iceObject.totalEnergy();
         }
 
@@ -81,7 +81,7 @@ public class Main{
             && initialTemperatureCelsius < 100 
             && finalTemperatureCelsius < 100
         ){
-            waterLiquid liquidObject = new waterLiquid(
+            WaterLiquid liquidObject = new WaterLiquid(
                 massInGrams, 
                 initialTemperatureCelsius, 
                 finalTemperatureCelsius
@@ -95,45 +95,45 @@ public class Main{
             && initialTemperatureCelsius <= 100 
             && finalTemperatureCelsius >= 100
         ){
-            waterLiquid liquidObject = new waterLiquid(
+            WaterLiquid liquidObject = new WaterLiquid(
                 massInGrams, 
                 initialTemperatureCelsius, 
                 100
             );
-            heatVaporizationObj = new heatVaporizationWater(massInGrams);
-            steam steamObject = new steam(
+            HeatVaporizationObj = new HeatVaporizationWater(massInGrams);
+            Steam steamObject = new Steam(
                 massInGrams, 
                 100, 
                 finalTemperatureCelsius
             );
             System.out.println("STEAM CALCULATIONS: ONLY WATER TO STEAM (2)\n");
 
-            return liquidObject.totalEnergy() + steamObject.totalEnergy() + heatVaporizationObj.totalEnergy();
+            return liquidObject.totalEnergy() + steamObject.totalEnergy() + HeatVaporizationObj.totalEnergy();
 
         } else if (finalTemperatureCelsius > 0 
             && finalTemperatureCelsius < 100 
             && initialTemperatureCelsius >= 100
         ){
-            steam steamObject = new steam(
+            Steam steamObject = new Steam(
                 massInGrams, 
                 initialTemperatureCelsius, 
                 100
             );
-            heatVaporizationObj = new heatVaporizationWater(massInGrams);
-            waterLiquid liquidObject = new waterLiquid(
+            HeatVaporizationObj = new HeatVaporizationWater(massInGrams);
+            WaterLiquid liquidObject = new WaterLiquid(
                 massInGrams, 
                 100, 
                 finalTemperatureCelsius
             );
             System.out.println("STEAM CALCULATIONS: ONLY STEAM TO WATER (3)\n");
 
-            return  steamObject.totalEnergy() + -heatVaporizationObj.totalEnergy() + liquidObject.totalEnergy();
+            return  steamObject.totalEnergy() + -HeatVaporizationObj.totalEnergy() + liquidObject.totalEnergy();
         }
 
         System.out.println("WATER CALCULATIONS: INAPPLICABLE");
 
         if (initialTemperatureCelsius > 100 & finalTemperatureCelsius > 100){
-            steam steamObject = new steam(
+            Steam steamObject = new Steam(
                 massInGrams, 
                 initialTemperatureCelsius, 
                 finalTemperatureCelsius
@@ -143,14 +143,14 @@ public class Main{
             return steamObject.totalEnergy();
 
         } else if (initialTemperatureCelsius >= 100 && finalTemperatureCelsius == 100){
-            steam steamObject = new steam(
+            Steam steamObject = new Steam(
                 massInGrams, 
                 initialTemperatureCelsius, 
                 finalTemperatureCelsius
             );
-            heatVaporizationObj = new heatVaporizationWater(massInGrams);
+            HeatVaporizationObj = new HeatVaporizationWater(massInGrams);
             System.out.println("STEAM CALCULATIONS: STEAM CONDENCES TO WATER (2)\n");
-            return steamObject.totalEnergy() + -heatVaporizationObj.totalEnergy();
+            return steamObject.totalEnergy() + -HeatVaporizationObj.totalEnergy();
         }
 
         System.out.println("STEAM CALCULATIONS: INAPPLICABLE");

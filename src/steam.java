@@ -1,14 +1,12 @@
 package src;
 
-public class steam{
-    double mass;
-    final double SPECIFICHEAT = 1.996;
-    double initialTemperature;
-    double finalTemperature;
+public class Steam{
+    private double mass;
+    private final double SPECIFICHEAT = 1.996;
+    private double initialTemperature;
+    private double finalTemperature;
 
-    heatVaporizationWater heatVaporizationWaterObj;
-
-    public steam(
+    public Steam(
         double mass, 
         double initialTemperature, 
         double finalTemperature
@@ -16,12 +14,12 @@ public class steam{
         this.mass = mass;
         this.initialTemperature = initialTemperature;
         this.finalTemperature = finalTemperature;
-
-        this.heatVaporizationWaterObj = new heatVaporizationWater(mass);
     }
 
     public double totalEnergy()
     {
-        return this.mass * this.SPECIFICHEAT * (this.finalTemperature - this.initialTemperature);
+        return this.mass * 
+        this.SPECIFICHEAT * 
+        (this.finalTemperature - this.initialTemperature);
     }
 }
