@@ -2,6 +2,7 @@ package test;
 
 import org.junit.jupiter.api.Test;
 import src.Ice;
+import src.Main;
 import src.Steam;
 import src.WaterLiquid;
 
@@ -9,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PhaseCalculationTest {
 
+    private static final double MASS = 250.0;
     private static final double TOLERANCE = 0.001;
 
     @Test
@@ -52,4 +54,60 @@ class PhaseCalculationTest {
 
         assertEquals(-5988.0, steam.totalEnergy(), TOLERANCE);
     }
+
+    void iceReachingZeroDegreesAppliesLatentHeatOfFusion() {
+        // Ice: -20°C -> 0°C, including melting
+        double expected = 10540.0 + 83500.0;
+
+        double actual = Main.calculateEnergy(MASS, -20.0, 0.0);
+
+        assertEquals(expected, actual, TOLERANCE);
+    }
+
+    @Test
+    void waterReachingOneHundredDegreesAppliesLatentHeatOfVaporization() {
+        // Water: 25°C -> 100°C, including vaporization
+        double expected = 78450.0 + 565000.0;
+
+        double actual = Main.calculateEnergy(MASS, 25.0, 100.0);
+
+        assertEquals(expected, actual, TOLERANCE);
+    }
+
+    @Test
+    void iceToWaterCrossingZeroDegreesIncludesFusion() {
+        // Ice: -20°C -> liquid water: 20°C
+        double expected = 10540.0 + 83500.0 + 20920.0;
+
+        double actual = Main.calculateEnergy(MASS, -20.0, 20.0);
+
+        assertEquals(expected, actual, TOLERANCE);
+    }
+
+    @Test
+    void waterToSteamCrossingOneHundredDegreesIncludesVaporization() {
+        // Water: 25°C -> steam: 150°C
+        double expected = 78450.0 + 565000.0 + 24950.0;
+
+        double actual = Main.calculateEnergy(MASS, 25.0, 150.0);
+
+        assertEquals(expected, actual, TOLERANCE);
+    }
+
+    @Test
+    void reversingIceToWaterTransitionReversesEnergySign() {
+        double heating = Main.calculateEnergy(MASS, -20.0, 20.0);
+        double cooling = Main.calculateEnergy(MASS, 20.0, -20.0);
+
+        assertEquals(-heating, cooling, TOLERANCE);
+    }
+
+    @Test
+    void reversingWaterToSteamTransitionReversesEnergySign() {
+        double heating = Main.calculateEnergy(MASS, 25.0, 150.0);
+        double cooling = Main.calculateEnergy(MASS, 150.0, 25.0);
+
+        assertEquals(-heating, cooling, TOLERANCE);
+    }
+
 }
