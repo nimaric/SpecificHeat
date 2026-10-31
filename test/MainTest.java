@@ -216,29 +216,16 @@ class MainTest {
 
     @Test
     void steamCoolsAndCondenses() {
-        // Steam at 150°C → liquid water at 100°C.
-        double mass = 250.0;
-        double latentHeatVaporization = 2260.0; // J/g; adjust to your constant
-        double expected =
-            mass * 1.996 * (100.0 - 150.0) +
-            (- mass) * latentHeatVaporization;
+        double energy = Main.calculateEnergy(250.0, 150.0, 100.0);
 
-        assertEquals(expected,
-            Main.calculateEnergy(mass, 150.0, 100.0), 0.001);
+        assertEquals(-589950.0, energy, 0.001);
     }
 
     @Test
     void steamCoolsIntoLiquidWater() {
-        // Steam at 150°C → liquid water at 25°C.
-        double mass = 250.0;
-        double latentHeatVaporization = 2260.0; // J/g; adjust to your constant
-        double expected =
-            mass * 1.996 * (100.0 - 150.0) +
-            (- mass) * latentHeatVaporization
-            + mass * 4.184 * (25.0 - 100.0);
+        double energy = Main.calculateEnergy(250.0, 150.0, 25.0);
 
-        assertEquals(expected,
-            Main.calculateEnergy(mass, 150.0, 25.0), 0.001);
+        assertEquals(-668400.0, energy, 0.001);
     }
 
     @Test
@@ -263,6 +250,14 @@ class MainTest {
     void steamToWater() {
         double energy = Main.calculateEnergy(250.0, 150.0, 25.0);
         assertTrue(energy < 0, "Cooling steam and condensing it should release energy");
+    }
+
+    @Test
+    void reversePhaseTransitionsCancelOut() {
+        double iceToWater = Main.calculateEnergy(250.0, -20.0, 20.0);
+        double waterToIce = Main.calculateEnergy(250.0, 20.0, -20.0);
+
+        assertEquals(iceToWater, -waterToIce, 0.001);
     }
 
 }
