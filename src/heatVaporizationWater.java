@@ -9,9 +9,11 @@ package src;
 
 public class HeatVaporizationWater {
     private final double mass; // measured in grams
+    private final double initialTemperature;
+    private final double finalTemperature;
     private static final double VAPORIZATION_JOULES_PER_GRAM = 2260.0;
 
-    public HeatVaporizationWater(double mass) {
+    public HeatVaporizationWater(double mass, double initialTemperature, double finalTemperature) {
         if (mass < 0) {
             throw new IllegalArgumentException("Mass cannot be negative.");
         }
@@ -20,9 +22,19 @@ public class HeatVaporizationWater {
         }
 
         this.mass = mass;
+        this.initialTemperature = initialTemperature;
+        this.finalTemperature = finalTemperature;
     }
 
     public double totalEnergy() {
-        return mass * VAPORIZATION_JOULES_PER_GRAM;
+        if (initialTemperature <= finalTemperature) {
+            double totalEnergy = mass * VAPORIZATION_JOULES_PER_GRAM;
+            System.out.println(totalEnergy + " = Q_hv = (" + mass + ")" + "(" + VAPORIZATION_JOULES_PER_GRAM + ")");
+            return totalEnergy;
+        } else {
+            double totalEnergy = mass * VAPORIZATION_JOULES_PER_GRAM;
+            System.out.println(totalEnergy + " = Q_hv = (" + mass + ")" + "(" + VAPORIZATION_JOULES_PER_GRAM + ")");
+            return totalEnergy;
+        }
     }
 }
