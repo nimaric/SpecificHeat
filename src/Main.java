@@ -98,85 +98,71 @@ public class Main{
         System.out.println(initialTemperatureCelsius);
         System.out.println(finalTemperatureCelsius);
 
-        double totalEnergyIce = 0.0;
-        double totalEnergyFusion = 0.0;
-        double totalEnergyWater = 0.0;
-        double totalEnergyVaporization = 0.0;
-        double totalEnergySteam = 0.0;
-
-        double totalEnergyObj;
+        double totalEnergyObj = 0.0;
         
         if (initialTemperatureCelsius < 0 && finalTemperatureCelsius <= 0){
-            totalEnergyIce = iceEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
+            totalEnergyObj += iceEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
             System.out.println("Only Ice (Ice)");
         }
         if (initialTemperatureCelsius < 0 && finalTemperatureCelsius > 0){
-            totalEnergyIce = iceEnergy(massInGrams, initialTemperatureCelsius, 0);
+            totalEnergyObj += iceEnergy(massInGrams, initialTemperatureCelsius, 0);
             System.out.println("Ice to Water (Ice)");
         }
-        if (initialTemperatureCelsius > 0 && finalTemperatureCelsius <= 0){
-            totalEnergyIce = iceEnergy(massInGrams, 0, finalTemperatureCelsius);
+        if (initialTemperatureCelsius > 0 && initialTemperatureCelsius < 100 && finalTemperatureCelsius <= 0){
+            totalEnergyObj += iceEnergy(massInGrams, 0, finalTemperatureCelsius);
             System.out.println("Water to Ice (Ice)");
         }
 
         if ((initialTemperatureCelsius <= 0 && finalTemperatureCelsius >= 0) || (finalTemperatureCelsius <= 0 & initialTemperatureCelsius >= 0)){
-            totalEnergyFusion = heatFusionEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
+            totalEnergyObj += heatFusionEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
             System.out.println("Fusion");
         }
 
         if (initialTemperatureCelsius >= 0 && initialTemperatureCelsius < 100 && finalTemperatureCelsius <= 100 && finalTemperatureCelsius >= 0){
-            totalEnergyWater = liquidEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
+            totalEnergyObj += liquidEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
             System.out.println("Only Water (Water)");
         }
         if (initialTemperatureCelsius > 0 && finalTemperatureCelsius > 100){
-            totalEnergyWater = liquidEnergy(massInGrams, initialTemperatureCelsius, 100);
+            totalEnergyObj += liquidEnergy(massInGrams, initialTemperatureCelsius, 100);
             System.out.println("Water to Steam (Water)");
         }
         if (initialTemperatureCelsius < 0 && finalTemperatureCelsius > 100){
-            totalEnergyWater = liquidEnergy(massInGrams, 0, 100);
+            totalEnergyObj += liquidEnergy(massInGrams, 0, 100);
             System.out.println("Water to Steam (Water) 0-100 Celsius");
         }
         if (initialTemperatureCelsius < 0 && finalTemperatureCelsius < 100 && finalTemperatureCelsius > 0){
-            totalEnergyWater = liquidEnergy(massInGrams, 0, finalTemperatureCelsius);
+            totalEnergyObj += liquidEnergy(massInGrams, 0, finalTemperatureCelsius);
             System.out.println("Ice to Water (Water)");
         }
         if (initialTemperatureCelsius > 0 && finalTemperatureCelsius < 0){
-            totalEnergyWater = liquidEnergy(massInGrams, initialTemperatureCelsius, 0);
+            totalEnergyObj += liquidEnergy(massInGrams, initialTemperatureCelsius, 0);
             System.out.println("Water to Ice (Water)");
         }
         if (initialTemperatureCelsius >= 100 && finalTemperatureCelsius < 100 && finalTemperatureCelsius > 0){
-            totalEnergyWater = liquidEnergy(massInGrams, 100, finalTemperatureCelsius);
+            totalEnergyObj += liquidEnergy(massInGrams, 100, finalTemperatureCelsius);
             System.out.println("Steam to Water (Water)");
         }
         if (initialTemperatureCelsius > 100 && finalTemperatureCelsius < 0){
-            totalEnergyWater = liquidEnergy(massInGrams, 100, 0);
+            totalEnergyObj += liquidEnergy(massInGrams, 100, 0);
             System.out.println("Steam to Water (Water) 100 - 0 Celsius");
         }
 
         if (initialTemperatureCelsius >= 100 || finalTemperatureCelsius >= 100){
-            totalEnergyVaporization = heatVaporizationEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
+            totalEnergyObj += heatVaporizationEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
             System.out.println("Vaporized");
         }
 
         if (initialTemperatureCelsius >= 100 && finalTemperatureCelsius > 100){
-            totalEnergySteam = steamEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
+            totalEnergyObj += steamEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
             System.out.println("Only Steam (Steam)");
         }
         if (initialTemperatureCelsius > 100 && finalTemperatureCelsius < 100){
-            totalEnergySteam = steamEnergy(massInGrams, initialTemperatureCelsius, 100);
+            totalEnergyObj += steamEnergy(massInGrams, initialTemperatureCelsius, 100);
             System.out.println("Steam to Water (Steam)");
         }
         if (initialTemperatureCelsius < 100 && finalTemperatureCelsius > 100){
-            totalEnergySteam = steamEnergy(massInGrams, 100, finalTemperatureCelsius);
+            totalEnergyObj += steamEnergy(massInGrams, 100, finalTemperatureCelsius);
             System.out.println("Water to Steam (Steam)");
-        }
-
-        if (initialTemperatureCelsius > finalTemperatureCelsius){
-            totalEnergyObj = totalEnergyIce - totalEnergyFusion + totalEnergyWater - totalEnergyVaporization + totalEnergySteam;
-            System.out.println("Reversed\n");
-        } else {
-            totalEnergyObj = totalEnergyIce + totalEnergyFusion + totalEnergyWater + totalEnergyVaporization + totalEnergySteam;
-            System.out.println("Normal\n");
         }
 
         return totalEnergyObj;
