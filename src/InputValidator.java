@@ -21,7 +21,7 @@ public class InputValidator {
         }
         // Check if the temperature goes below Absolute Zero
         if (-273.15 > initialTemperature || -273.15 > finalTemperature){
-            throw new IllegalArgumentException("Temperature cannot be below absolute zero (-273.15).");
+            throw new IllegalArgumentException("Temperature cannot be below Absolute Zero (-273.15).");
         }
         if (!Double.isFinite(initialTemperature) || !Double.isFinite(finalTemperature)){
             throw new IllegalArgumentException("Temperature cannot be NaN (Not a Number) or Infinity.");

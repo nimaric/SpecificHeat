@@ -30,6 +30,8 @@ public class WaterThermalCalculator {
     }
 
     public double calculateEnergyRequired() {
+        InputValidator.validate(massGrams, initialTemp, finalTemp);
+        
         double energy = 0.0;
         double current = initialTemp;
         double target = finalTemp;
