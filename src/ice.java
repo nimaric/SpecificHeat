@@ -38,7 +38,7 @@ public class Ice{
     {
         double totalEnergy = this.mass * SPECIFIC_HEAT * 
         (this.finalTemperature - this.initialTemperature);
-        System.out.println(totalEnergy + " = Q_ice = " + this.mass + "(" + SPECIFIC_HEAT+ ")" + "(" + this.finalTemperature + "-" + this.initialTemperature + ")");
+        System.out.println("[SpecificHeat]: " + totalEnergy + " = Q_ice = " + this.mass + "(" + SPECIFIC_HEAT+ ")" + "(" + this.finalTemperature + "-" + this.initialTemperature + ")");
         return totalEnergy;
     }
 }
