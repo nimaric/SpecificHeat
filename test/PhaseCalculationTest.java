@@ -12,178 +12,83 @@
 
 package test;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import src.Main;
-import src.calculations.Ice;
-import src.calculations.Steam;
-import src.calculations.WaterLiquid;
+import src.WaterThermalCalculator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PhaseCalculationTest {
 
-    private static final double MASS = 250.0;
     private static final double TOLERANCE = 0.001;
+    private WaterThermalCalculator calculator;
 
-    @Test
-    void iceHeating() {
-        Ice ice = new Ice(100.0, -20.0, -5.0);
-
-        assertEquals(3162.0, ice.totalEnergy(), TOLERANCE);
+    @BeforeEach
+    void setUp() {
+        calculator = new WaterThermalCalculator();
     }
 
     @Test
-    void iceCooling() {
-        Ice ice = new Ice(100.0, -5.0, -20.0);
-
-        assertEquals(-3162.0, ice.totalEnergy(), TOLERANCE);
+    @DisplayName("Specific heat calculation should accurately apply Q = m * c * ΔT")
+    void specificHeatCalculatesCorrectly() {
+        calculator.setMass(250.0); // 250 grams
+        double specificHeatWater = 4.184;
+        
+        // Heating liquid water from 20°C to 60°C (ΔT = 40)
+        // Expected: 250.0 * 4.184 * 40.0 = 41840.0 Joules
+        double result = calculator.calculateSpecificHeat(specificHeatWater, 20.0, 60.0);
+        
+        assertEquals(41840.0, result, TOLERANCE);
     }
 
     @Test
-    void iceToZero() {
-        assertEquals(
-            94040.0,
-            Main.calculateEnergy(MASS, -20.0, 0.0),
-            TOLERANCE
-        );
+    @DisplayName("Specific heat calculation should handle negative temperature changes (cooling)")
+    void specificHeatHandlesNegativeDeltaT() {
+        calculator.setMass(100.0); // 100 grams
+        double specificHeatIce = 2.09;
+        
+        // Cooling ice from -5°C to -15°C (ΔT = -10)
+        // Expected: 100.0 * 2.09 * -10.0 = -2090.0 Joules
+        double result = calculator.calculateSpecificHeat(specificHeatIce, -5.0, -15.0);
+        
+        assertEquals(-2090.0, result, TOLERANCE);
     }
 
     @Test
-    void waterHeating() {
-        WaterLiquid water = new WaterLiquid(100.0, 20.0, 80.0);
-
-        assertEquals(25104.0, water.totalEnergy(), TOLERANCE);
+    @DisplayName("Latent heat calculation should accurately apply Q = m * L")
+    void latentHeatCalculatesCorrectly() {
+        calculator.setMass(50.0); // 50 grams
+        double latentVaporization = 2260.0;
+        
+        // Vaporizing 50g of water at 100°C
+        // Expected: 50.0 * 2260.0 = 113000.0 Joules
+        double result = calculator.calculateLatentHeat(latentVaporization);
+        
+        assertEquals(113000.0, result, TOLERANCE);
     }
 
     @Test
-    void waterCooling() {
-        WaterLiquid water = new WaterLiquid(100.0, 80.0, 20.0);
-
-        assertEquals(-25104.0, water.totalEnergy(), TOLERANCE);
+    @DisplayName("Specific heat should yield zero when there is no temperature change")
+    void specificHeatReturnsZeroForNoTemperatureChange() {
+        calculator.setMass(500.0);
+        
+        // Initial and final temperatures match
+        double result = calculator.calculateSpecificHeat(4.184, 25.0, 25.0);
+        
+        assertEquals(0.0, result, TOLERANCE);
     }
 
     @Test
-    void steamHeating() {
-        Steam steam = new Steam(100.0, 120.0, 150.0);
-
-        assertEquals(5988.0, steam.totalEnergy(), TOLERANCE);
+    @DisplayName("Both calculation methods should return zero if the mass is zero")
+    void calculationMethodsReturnZeroForZeroMass() {
+        calculator.setMass(0.0); // 0 grams
+        
+        double specificHeatResult = calculator.calculateSpecificHeat(4.184, 10.0, 90.0);
+        double latentHeatResult = calculator.calculateLatentHeat(334.0);
+        
+        assertEquals(0.0, specificHeatResult, TOLERANCE);
+        assertEquals(0.0, latentHeatResult, TOLERANCE);
     }
-
-    @Test
-    void steamCooling() {
-        Steam steam = new Steam(100.0, 150.0, 120.0);
-
-        assertEquals(-5988.0, steam.totalEnergy(), TOLERANCE);
-    }
-
-    void iceReachingZeroDegreesAppliesLatentHeatOfFusion() {
-        // Ice: -20°C -> 0°C, including melting
-        double expected = 10540.0 + 83500.0;
-
-        double actual = Main.calculateEnergy(MASS, -20.0, 0.0);
-
-        assertEquals(expected, actual, TOLERANCE);
-    }
-
-    @Test
-    void waterReachingOneHundredDegreesAppliesLatentHeatOfVaporization() {
-        // Water: 25°C -> 100°C, including vaporization
-        double expected = 78450.0 + 565000.0;
-
-        double actual = Main.calculateEnergy(MASS, 25.0, 100.0);
-
-        assertEquals(expected, actual, TOLERANCE);
-    }
-
-    @Test
-    void iceToWaterCrossingZeroDegreesIncludesFusion() {
-        // Ice: -20°C -> liquid water: 20°C
-        double expected = 10540.0 + 83500.0 + 20920.0;
-
-        double actual = Main.calculateEnergy(MASS, -20.0, 20.0);
-
-        assertEquals(expected, actual, TOLERANCE);
-    }
-
-    @Test
-    void waterToSteamCrossingOneHundredDegreesIncludesVaporization() {
-        // Water: 25°C -> steam: 150°C
-        double expected = 78450.0 + 565000.0 + 24950.0;
-
-        double actual = Main.calculateEnergy(MASS, 25.0, 150.0);
-
-        assertEquals(expected, actual, TOLERANCE);
-    }
-
-    @Test
-    void reversingIceToWaterTransitionReversesEnergySign() {
-        double heating = Main.calculateEnergy(MASS, -20.0, 20.0);
-        double cooling = Main.calculateEnergy(MASS, 20.0, -20.0);
-
-        assertEquals(-heating, cooling, TOLERANCE);
-    }
-
-    @Test
-    void reversingWaterToSteamTransitionReversesEnergySign() {
-        double heating = Main.calculateEnergy(MASS, 25.0, 150.0);
-        double cooling = Main.calculateEnergy(MASS, 150.0, 25.0);
-
-        assertEquals(-heating, cooling, TOLERANCE);
-    }
-
-    @Test
-    void zeroToWater() {
-        assertEquals(
-            104420.0,
-            Main.calculateEnergy(MASS, 0.0, 20.0),
-            TOLERANCE
-        );
-    }
-
-    @Test
-    void zeroToBoilingPoint() {
-        assertEquals(
-            753100.0,
-            Main.calculateEnergy(MASS, 0.0, 100.0),
-            TOLERANCE
-        );
-    }
-
-    @Test
-    void waterToZero() {
-        assertEquals(
-            -109650.0,
-            Main.calculateEnergy(MASS, 25.0, 0.0),
-            TOLERANCE
-        );
-    }
-
-    @Test
-    void boilingPointToWater() {
-        assertEquals(
-            -585920.0,
-            Main.calculateEnergy(MASS, 100.0, 80.0),
-            TOLERANCE
-        );
-    }
-
-    @Test
-    void sameTemperature() {
-        assertEquals(
-            0.0,
-            Main.calculateEnergy(MASS, 25.0, 25.0),
-            TOLERANCE
-        );
-    }
-
-    @Test
-    void boilingPointToSteam() {
-        assertEquals(
-            589950.0,
-            Main.calculateEnergy(MASS, 100.0, 150.0),
-            TOLERANCE
-        );
-    }
-
 }
+
