@@ -20,7 +20,21 @@
 
 package src;
 
+import java.util.Scanner;
+
 public class Main{
+    static Scanner scanner = new Scanner(System.in); 
+    double mass = scanner.nextDouble();
+    double t_i = scanner.nextDouble();
+    double t_f = scanner.nextDouble();
+
+    double message = calculateEnergy(mass, t_i, t_f);
+    // Option 2: Save to a variable first
+    public static void main(String[] args) {
+        Main main = new Main();
+    System.out.println("\n[SpecificHeat]: Q_total = " + main.message);
+    }
+
     private static double iceEnergy(
         double mass,
         double start,
@@ -30,9 +44,11 @@ public class Main{
     }
 
     private static double heatFusionEnergy(
-        double mass
+        double mass,
+        double start,
+        double end
     ){
-        return new HeatFusionWater(mass).totalEnergy();
+        return new HeatFusionWater(mass, start, end).totalEnergy();
     }
    
     private static double liquidEnergy(
@@ -44,9 +60,11 @@ public class Main{
     }
 
     private static double heatVaporizationEnergy(
-        double mass
+        double mass,
+        double start,
+        double end
     ){
-        return new HeatVaporizationWater(mass).totalEnergy();
+        return new HeatVaporizationWater(mass, start, end).totalEnergy();
     }
 
     private static double steamEnergy(
@@ -102,7 +120,7 @@ public class Main{
         }
 
         if ((initialTemperatureCelsius <= 0 && finalTemperatureCelsius >= 0) || (finalTemperatureCelsius <= 0 & initialTemperatureCelsius >= 0)){
-            totalEnergyFusion = heatFusionEnergy(massInGrams);
+            totalEnergyFusion = heatFusionEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
             System.out.println("Fusion");
         }
 
@@ -136,7 +154,7 @@ public class Main{
         }
 
         if (initialTemperatureCelsius >= 100 || finalTemperatureCelsius >= 100){
-            totalEnergyVaporization = heatVaporizationEnergy(massInGrams);
+            totalEnergyVaporization = heatVaporizationEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
             System.out.println("Vaporized");
         }
 
