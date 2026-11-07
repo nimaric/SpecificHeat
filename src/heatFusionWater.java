@@ -31,7 +31,7 @@ public class HeatFusionWater {
             System.out.println(totalEnergy + " = Q_hf = (" + mass + ")" + "(" + FUSION_JOULES_PER_GRAM + ")");
             return totalEnergy;
         } else {
-            double totalEnergy = mass * FUSION_JOULES_PER_GRAM;
+            double totalEnergy = mass * -FUSION_JOULES_PER_GRAM;
             System.out.println(totalEnergy + " = Q_hf = (" + mass + ")" + "(" + FUSION_JOULES_PER_GRAM + ")");
             return totalEnergy;
         }
