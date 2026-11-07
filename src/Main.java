@@ -22,6 +22,10 @@ package src;
 
 import java.util.Scanner;
 
+import src.calculations.HeatFusionWater;
+import src.calculations.HeatVaporizationWater;
+import src.calculations.WaterLiquid;
+
 public class Main{
     static Scanner scanner = new Scanner(System.in); 
     double mass = scanner.nextDouble();
@@ -80,19 +84,7 @@ public class Main{
         double initialTemperatureCelsius,
         double finalTemperatureCelsius
     ){
-        if (massInGrams < 0) {
-            throw new IllegalArgumentException("Mass cannot be negative.");
-        }
-        // Check if the temperature goes below Absolute Zero
-        if (-273.15 > initialTemperatureCelsius || -273.15 > finalTemperatureCelsius){
-            throw new IllegalArgumentException("Temperature cannot be below absolute zero (-273.15).");
-        }
-        if (!Double.isFinite(massInGrams)){
-            throw new IllegalArgumentException("Mass cannot be NaN (Not a Number) or Infinity.");
-        }
-        if (!Double.isFinite(initialTemperatureCelsius) || !Double.isFinite(finalTemperatureCelsius)){
-            throw new IllegalArgumentException("Temperature cannot be NaN (Not a Number) or Infinity.");
-        }
+        InputValidator.validate(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
 
         System.out.println("[SpecificHeat]: total Mass: " + massInGrams);
         System.out.println("[SpecificHeat]: initial Temperature: " + initialTemperatureCelsius);

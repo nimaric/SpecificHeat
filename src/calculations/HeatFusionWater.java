@@ -4,7 +4,9 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-package src;
+package src.calculations;
+
+import src.InputValidator;
 
 public class HeatFusionWater {
     private final double mass; // measured in grams
@@ -13,12 +15,7 @@ public class HeatFusionWater {
     private static final double FUSION_JOULES_PER_GRAM = 334.0;
 
     public HeatFusionWater(double mass, double initialTemperature, double finalTemperature) {
-        if (mass < 0) {
-            throw new IllegalArgumentException("Mass cannot be negative.");
-        }
-        if (!Double.isFinite(mass)){
-            throw new IllegalArgumentException("Mass cannot be NaN (Not a Number) or Infinity.");
-        }
+        InputValidator.validate(mass, initialTemperature, finalTemperature);
 
         this.mass = mass;
         this.initialTemperature = initialTemperature;

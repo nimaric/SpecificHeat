@@ -5,7 +5,9 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-package src;
+package src.calculations;
+
+import src.InputValidator;
 
 public class Ice{
     private final double mass; // measured in grams
@@ -14,21 +16,8 @@ public class Ice{
     private final double finalTemperature;
 
     public Ice(double mass, double initialTemperature, double finalTemperature) {
-        if (mass < 0) {
-            throw new IllegalArgumentException("Mass cannot be negative.");
-        }
-        if (initialTemperature < -273.15 || finalTemperature < -273.15) {
-            throw new IllegalArgumentException(
-                "Temperature cannot be below absolute zero (-273.15)."
-            );
-        }
-        if (!Double.isFinite(mass)){
-            throw new IllegalArgumentException("Mass cannot be NaN (Not a Number) or Infinity.");
-        }
-        if (!Double.isFinite(initialTemperature) || !Double.isFinite(finalTemperature)){
-            throw new IllegalArgumentException("Temperature cannot be NaN (Not a Number) or Infinity.");
-        }
-
+        InputValidator.validate(mass, initialTemperature, finalTemperature);
+        
         this.mass = mass;
         this.initialTemperature = initialTemperature;
         this.finalTemperature = finalTemperature;
