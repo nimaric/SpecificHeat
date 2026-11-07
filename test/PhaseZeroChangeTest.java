@@ -14,9 +14,10 @@ package test;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import src.Ice;
-import src.Steam;
-import src.WaterLiquid;
+
+import src.calculations.Ice;
+import src.calculations.Steam;
+import src.calculations.WaterLiquid;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

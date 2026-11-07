@@ -13,10 +13,11 @@
 package test;
 
 import org.junit.jupiter.api.Test;
-import src.Ice;
+
 import src.Main;
-import src.Steam;
-import src.WaterLiquid;
+import src.calculations.Ice;
+import src.calculations.Steam;
+import src.calculations.WaterLiquid;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
