@@ -28,11 +28,11 @@ public class HeatFusionWater {
     public double totalEnergy() {
         if (initialTemperature <= finalTemperature) {
             double totalEnergy = mass * FUSION_JOULES_PER_GRAM;
-            System.out.println(totalEnergy + " = Q_hf = (" + mass + ")" + "(" + FUSION_JOULES_PER_GRAM + ")");
+            System.out.println("[SpecificHeat]: " + totalEnergy + " = Q_hf = (" + mass + ")" + "(" + FUSION_JOULES_PER_GRAM + ")");
             return totalEnergy;
         } else {
             double totalEnergy = mass * -FUSION_JOULES_PER_GRAM;
-            System.out.println(totalEnergy + " = Q_hf = (" + mass + ")" + "(" + FUSION_JOULES_PER_GRAM + ")");
+            System.out.println("[SpecificHeat]: " + totalEnergy + " = Q_hf = (" + mass + ")" + "(" + FUSION_JOULES_PER_GRAM + ")");
             return totalEnergy;
         }
     }

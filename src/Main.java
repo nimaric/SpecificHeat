@@ -94,75 +94,75 @@ public class Main{
             throw new IllegalArgumentException("Temperature cannot be NaN (Not a Number) or Infinity.");
         }
 
-        System.out.println(massInGrams);
-        System.out.println(initialTemperatureCelsius);
-        System.out.println(finalTemperatureCelsius);
+        System.out.println("[SpecificHeat]: total Mass: " + massInGrams);
+        System.out.println("[SpecificHeat]: initial Temperature: " + initialTemperatureCelsius);
+        System.out.println("[SpecificHeat]: final Temperature: " + finalTemperatureCelsius);
 
         double totalEnergyObj = 0.0;
         
         if (initialTemperatureCelsius < 0 && finalTemperatureCelsius <= 0){
             totalEnergyObj += iceEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
-            System.out.println("Only Ice (Ice)");
+            System.out.println("[SpecificHeat]: Only Ice (Ice)");
         }
         if (initialTemperatureCelsius < 0 && finalTemperatureCelsius > 0){
             totalEnergyObj += iceEnergy(massInGrams, initialTemperatureCelsius, 0);
-            System.out.println("Ice to Water (Ice)");
+            System.out.println("[SpecificHeat]: Ice to Water (Ice)");
         }
         if (initialTemperatureCelsius > 0 && initialTemperatureCelsius < 100 && finalTemperatureCelsius <= 0){
             totalEnergyObj += iceEnergy(massInGrams, 0, finalTemperatureCelsius);
-            System.out.println("Water to Ice (Ice)");
+            System.out.println("[SpecificHeat]: Water to Ice (Ice)");
         }
 
         if ((initialTemperatureCelsius <= 0 && finalTemperatureCelsius >= 0) || (finalTemperatureCelsius <= 0 & initialTemperatureCelsius >= 0)){
             totalEnergyObj += heatFusionEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
-            System.out.println("Fusion");
+            System.out.println("[SpecificHeat]: Fusion");
         }
 
         if (initialTemperatureCelsius >= 0 && initialTemperatureCelsius < 100 && finalTemperatureCelsius <= 100 && finalTemperatureCelsius >= 0){
             totalEnergyObj += liquidEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
-            System.out.println("Only Water (Water)");
+            System.out.println("[SpecificHeat]: Only Water (Water)");
         }
         if (initialTemperatureCelsius > 0 && finalTemperatureCelsius > 100){
             totalEnergyObj += liquidEnergy(massInGrams, initialTemperatureCelsius, 100);
-            System.out.println("Water to Steam (Water)");
+            System.out.println("[SpecificHeat]: Water to Steam (Water)");
         }
         if (initialTemperatureCelsius < 0 && finalTemperatureCelsius > 100){
             totalEnergyObj += liquidEnergy(massInGrams, 0, 100);
-            System.out.println("Water to Steam (Water) 0-100 Celsius");
+            System.out.println("[SpecificHeat]: Water to Steam (Water) 0-100 Celsius");
         }
         if (initialTemperatureCelsius < 0 && finalTemperatureCelsius < 100 && finalTemperatureCelsius > 0){
             totalEnergyObj += liquidEnergy(massInGrams, 0, finalTemperatureCelsius);
-            System.out.println("Ice to Water (Water)");
+            System.out.println("[SpecificHeat]: Ice to Water (Water)");
         }
         if (initialTemperatureCelsius > 0 && finalTemperatureCelsius < 0){
             totalEnergyObj += liquidEnergy(massInGrams, initialTemperatureCelsius, 0);
-            System.out.println("Water to Ice (Water)");
+            System.out.println("[SpecificHeat]: Water to Ice (Water)");
         }
         if (initialTemperatureCelsius >= 100 && finalTemperatureCelsius < 100 && finalTemperatureCelsius > 0){
             totalEnergyObj += liquidEnergy(massInGrams, 100, finalTemperatureCelsius);
-            System.out.println("Steam to Water (Water)");
+            System.out.println("[SpecificHeat]: Steam to Water (Water)");
         }
         if (initialTemperatureCelsius > 100 && finalTemperatureCelsius < 0){
             totalEnergyObj += liquidEnergy(massInGrams, 100, 0);
-            System.out.println("Steam to Water (Water) 100 - 0 Celsius");
+            System.out.println("[SpecificHeat]: Steam to Water (Water) 100 - 0 Celsius");
         }
 
         if (initialTemperatureCelsius >= 100 || finalTemperatureCelsius >= 100){
             totalEnergyObj += heatVaporizationEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
-            System.out.println("Vaporized");
+            System.out.println("[SpecificHeat]: Vaporized");
         }
 
         if (initialTemperatureCelsius >= 100 && finalTemperatureCelsius > 100){
             totalEnergyObj += steamEnergy(massInGrams, initialTemperatureCelsius, finalTemperatureCelsius);
-            System.out.println("Only Steam (Steam)");
+            System.out.println("[SpecificHeat]: Only Steam (Steam)");
         }
         if (initialTemperatureCelsius > 100 && finalTemperatureCelsius < 100){
             totalEnergyObj += steamEnergy(massInGrams, initialTemperatureCelsius, 100);
-            System.out.println("Steam to Water (Steam)");
+            System.out.println("[SpecificHeat]: Steam to Water (Steam)");
         }
         if (initialTemperatureCelsius < 100 && finalTemperatureCelsius > 100){
             totalEnergyObj += steamEnergy(massInGrams, 100, finalTemperatureCelsius);
-            System.out.println("Water to Steam (Steam)");
+            System.out.println("[SpecificHeat]: Water to Steam (Steam)");
         }
 
         return totalEnergyObj;

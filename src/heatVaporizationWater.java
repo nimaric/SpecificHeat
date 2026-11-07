@@ -29,11 +29,11 @@ public class HeatVaporizationWater {
     public double totalEnergy() {
         if (initialTemperature <= finalTemperature) {
             double totalEnergy = mass * VAPORIZATION_JOULES_PER_GRAM;
-            System.out.println(totalEnergy + " = Q_hv = (" + mass + ")" + "(" + VAPORIZATION_JOULES_PER_GRAM + ")");
+            System.out.println("[SpecificHeat]: " + totalEnergy + " = Q_hv = (" + mass + ")" + "(" + VAPORIZATION_JOULES_PER_GRAM + ")");
             return totalEnergy;
         } else {
             double totalEnergy = mass * -VAPORIZATION_JOULES_PER_GRAM;
-            System.out.println(totalEnergy + " = Q_hv = (" + mass + ")" + "(" + VAPORIZATION_JOULES_PER_GRAM + ")");
+            System.out.println("[SpecificHeat]: " + totalEnergy + " = Q_hv = (" + mass + ")" + "(" + VAPORIZATION_JOULES_PER_GRAM + ")");
             return totalEnergy;
         }
     }
