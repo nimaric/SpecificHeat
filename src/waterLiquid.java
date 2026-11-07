@@ -36,8 +36,9 @@ public class WaterLiquid{
 
     public double totalEnergy()
     {
-        return this.mass * 
-        SPECIFIC_HEAT * 
+        double totalEnergy = this.mass * SPECIFIC_HEAT * 
         (this.finalTemperature - this.initialTemperature);
+        System.out.println(totalEnergy + " = Q_liquid = " + this.mass + "(" + SPECIFIC_HEAT+ ")" + "(" + this.finalTemperature + "-" + this.initialTemperature + ")");
+        return totalEnergy;
     }
 }
