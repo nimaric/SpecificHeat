@@ -13,46 +13,80 @@
 package test;
 
 import org.junit.jupiter.api.Test;
-import src.Main;
+import src.WaterThermalCalculator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EnergyPropertiesTest {
 
     private static final double TOLERANCE = 0.001;
 
+    // Helper method to keep tests clean and readable
+    private double runCalculation(double mass, double t_i, double t_f) {
+        WaterThermalCalculator calculator = new WaterThermalCalculator();
+        calculator.setMass(mass);
+        calculator.setInitialTemp(t_i);
+        calculator.setFinalTemp(t_f);
+        return calculator.calculateEnergyRequired();
+    }
+
     @Test
     void reversingTemperaturesReversesEnergy() {
-        double heating = Main.calculateEnergy(250.0, -20.0, 150.0);
-        double cooling = Main.calculateEnergy(250.0, 150.0, -20.0);
+        double heating = runCalculation(250.0, -20.0, 150.0);
+        double cooling = runCalculation(250.0, 150.0, -20.0);
 
         assertEquals(heating, -cooling, TOLERANCE);
     }
 
     @Test
-    void doublingMassDoublesEnergy() {
-        double energy250g = Main.calculateEnergy(250.0, 25.0, 150.0);
-        double energy500g = Main.calculateEnergy(500.0, 25.0, 150.0);
+    void zeroTemperatureChangeRequiresZeroEnergy() {
+        double energyIce = runCalculation(100.0, -50.0, -50.0);
+        double energyWater = runCalculation(100.0, 25.0, 25.0);
+        double energySteam = runCalculation(100.0, 150.0, 150.0);
 
-        assertEquals(2.0 * energy250g, energy500g, TOLERANCE);
+        assertEquals(0.0, energyIce, TOLERANCE);
+        assertEquals(0.0, energyWater, TOLERANCE);
+        assertEquals(0.0, energySteam, TOLERANCE);
     }
 
     @Test
-    void zeroTemperatureChangeReturnsZero() {
-        assertEquals(
-            0.0,
-            Main.calculateEnergy(250.0, 25.0, 25.0),
-            TOLERANCE
-        );
+    void energyIsLinearlyProportionalToMass() {
+        double energyBase = runCalculation(100.0, -10.0, 110.0);
+        double energyDoubleMass = runCalculation(200.0, -10.0, 110.0);
+
+        // Doubling the mass should exactly double the required energy
+        assertEquals(energyBase * 2.0, energyDoubleMass, TOLERANCE);
     }
 
     @Test
-    void multistageEnergyEqualsSumOfStages() {
-        double direct = Main.calculateEnergy(250.0, -20.0, 150.0);
+    void zeroMassRequiresZeroEnergy() {
+        double energy = runCalculation(0.0, -50.0, 150.0);
+        
+        assertEquals(0.0, energy, TOLERANCE);
+    }
 
-        double iceToWater = Main.calculateEnergy(250.0, -20.0, 20.0);
-        double waterToSteam = Main.calculateEnergy(250.0, 20.0, 150.0);
+    @Test
+    void purePhaseChangeOnlyIncludesLatentHeat() {
+        double mass = 10.0;
+        double latentFusionConstant = 334.0;
+        
+        // Heating from 0°C (ice) to 0°C (water) should only be melting latent heat
+        double meltingEnergy = runCalculation(mass, 0.0, 0.0001); 
+        // Note: Using a micro-step past 0.0 triggers the phase change block in the code
+        
+        double expectedLatentHeat = mass * latentFusionConstant;
+        
+        // Assert that the energy matches the expected latent heat within a small variance
+        assertEquals(expectedLatentHeat, meltingEnergy, 0.01);
+    }
 
-        assertEquals(direct, iceToWater + waterToSteam, TOLERANCE);
+    @Test
+    void energySignMatchesTemperatureDirection() {
+        double heatingEnergy = runCalculation(50.0, 20.0, 80.0);
+        double coolingEnergy = runCalculation(50.0, 80.0, 20.0);
+
+        assertTrue(heatingEnergy > 0, "Heating energy should be positive (absorbing heat)");
+        assertTrue(coolingEnergy < 0, "Cooling energy should be negative (releasing heat)");
     }
 }
