@@ -278,14 +278,15 @@ static {
         }
     }
 
-    static Scanner scanner = new Scanner(System.in); 
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
         System.out.println("Enter material name: ");
         LOGGER.finest("Asking for: material");
 
         String inputMaterialName = scanner.nextLine();
         Materials materialProperty = Materials.getMaterial(inputMaterialName);
-        
+
 
         System.out.println("Enter mass (g), initial temp (°C), and final temp (°C):");
         LOGGER.finest("Asking for: mass");
@@ -304,9 +305,14 @@ static {
         calculateEnergy.setFinalTemp(t_f);
         LOGGER.finest("Set the material's final Temp: " + t_f);
 
-        // Display results
+        // Close scanner as parameters are all inputted
+        scanner.close(); 
+
+        // Calculate using provided parameters to display
         double totalEnergy = calculateEnergy.calculateEnergyRequired();
         LOGGER.finest("Received totalEnergy: " + totalEnergy);
+
+        // Display results
         System.out.printf("\nTotal Energy Required: %.2f Joules%n", totalEnergy);
         LOGGER.finest("Printed out totalEnergy: " + totalEnergy);
     }
