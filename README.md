@@ -1,49 +1,69 @@
 # SpecificHeat
 
-A Java-based thermal energy calculator that calculates the energy absorbed or released when water changes temperature or transitions between solid, liquid, and gaseous states.
+SpecificHeat is a Java-based thermal energy calculator designed to compute the total energy (in Joules) required to change the temperature and/or phase of water across different states (ice, liquid water, and steam).
 
-## Overview
+## Features
+**Multi-Phase Calculations:** Handles continuous transitions across solid, liquid, and gas phases.
+  * **Ice:**  $2.09 \text{ J/g}\cdot^\circ\text{C}$
+  * **Water:** $4.184 \text{ J/g}\cdot^\circ\text{C}$
+  * **Steam:** $2.01 \text{ J/g}\cdot^\circ\text{C}$
 
-SpecificHeat calculates thermal energy changes involving three phases of water:
+**Latent Heat Integration:** Automatically factors in latent heat during phase transitions:
+  * Fusion (Melting/Freezing at $0^\circ\text{C}$): $334.0 \text{ J/g}$
+  * Vaporization (Boiling/Condensation at $100^\circ\text{C}$): $2260.0 \text{ J/g}$
 
-- **Ice:** Calculates sensible heat changes using the specific heat capacity of ice.
-- **Liquid water:** Calculates sensible heat changes using the specific heat capacity of liquid water.
-- **Steam:** Calculates sensible heat changes using the specific heat capacity of steam.
-- **Phase transitions:** Accounts for latent heat associated with melting, freezing, vaporization, and condensation.
+**Input Validation (`InputValidator.java`):**
+  * Prevents negative masses and non-finite numbers ($\text{NaN}$ or $\infty$).
+  * Ensures temperatures do not fall below Absolute Zero ($-273.15^\circ\text{C}$).
 
-The calculator uses positive energy values for energy absorbed and negative values for energy released.
+**Safe Calculation Loop:** Includes safeguards against infinite loops or calculations exceeding integer/numeric limits.
 
-## Physics and Formulas
+**Numerical Safeguards:** Precision tolerance ($\epsilon = 10^{-6}$) for float comparisons and infinite loop prevention.
+
+---
+
+## Physics & Formulas
+
+The total energy change is calculated by summing the **sensible heat** required for temperature changes within a phase and the **latent heat** absorbed or released during phase transitions.
+
+---
 
 ### Sensible Heat
 
 Temperature changes within a single phase are calculated using:
 
-\[
-Q = mc\Delta T
-\]
+$$Q = m \cdot c \cdot \Delta T$$
 
 Where:
+* $Q$ = thermal energy transferred ($\text{J}$)
+* $m$ = mass ($\text{g}$)
+* $c$ = specific heat capacity ($\text{J}/(\text{g}\cdot^\circ\text{C})$)
+* $\Delta T = T_f - T_i$ = temperature change ($^\circ\text{C}$)
 
-- \(Q\) = thermal energy transferred (J)
-- \(m\) = mass (g)
-- \(c\) = specific heat capacity (J/(g·°C))
-- \(\Delta T = T_f - T_i\) = temperature change (°C)
+#### Specific Heat Values Used:
+* **Ice ($c_{\text{ice}}$):** $2.09 \text{ J}/(\text{g}\cdot^\circ\text{C})$
+* **Liquid Water ($c_{\text{water}}$):** $4.184 \text{ J}/(\text{g}\cdot^\circ\text{C})$
+* **Steam ($c_{\text{steam}}$):** $2.01 \text{ J}/(\text{g}\cdot^\circ\text{C})$
+
+---
 
 ### Latent Heat
 
-Phase transitions are calculated using:
+Phase transitions occurring at constant temperatures ($0^\circ\text{C}$ and $100^\circ\text{C}$) are calculated using:
 
-\[
-Q = mL
-\]
+$$Q = m \cdot L$$
 
 Where:
+* $m$ = mass ($\text{g}$)
+* $L$ = specific latent heat ($\text{J}/\text{g}$)
 
-- \(m\) = mass (g)
-- \(L\) = specific latent heat (J/g)
+#### Latent Heat Values Used:
+* **Latent Heat of Fusion ($L_f$ at $0^\circ\text{C}$):** $334.0 \text{ J}/\text{g}$ (Melting / Freezing)
+* **Latent Heat of Vaporization ($L_v$ at $100^\circ\text{C}$):** $2260.0 \text{ J}/\text{g}$ (Vaporization / Condensation)
 
-Melting and vaporization absorb energy, while freezing and condensation release energy. The sign of the energy contribution depends on the direction of the transition.
+> **Note:** Energy is absorbed during melting and vaporization ($\Delta T > 0$), and released during freezing and condensation ($\Delta T < 0$).
+
+---
 
 ### Physical Constants
 
@@ -68,35 +88,38 @@ A future improvement may introduce explicit phase-state information to distingui
 
 ## Project Structure
 
-| Class | Responsibility |
-|---|---|
-| `Main` | Validates inputs, coordinates energy calculations, and combines the contributions from each phase and phase transition. |
-| `Ice` | Calculates sensible heat changes for ice. |
-| `WaterLiquid` | Calculates sensible heat changes for liquid water. |
-| `Steam` | Calculates sensible heat changes for steam. |
-| `HeatFusionWater` | Calculates latent heat associated with melting and freezing. |
-| `HeatVaporizationWater` | Calculates latent heat associated with vaporization and condensation. |
-
-## Usage
-
-The main calculation method is:
-
-```java
-Main.calculateEnergy(
-    massInGrams,
-    initialTemperatureCelsius,
-    finalTemperatureCelsius
-);
+```text
+SpecificHeat/
+└── src/
+    ├── InputValidator.java         # Validates input parameters
+    └── WaterThermalCalculator.java # Core thermal engine & CLI driver
+└── test/
+    ├── ConsoleIntegrationTest.java # Tests command-line I/O streams and main runner execution
+    ├── EnergyPropertiesTest.java   # Verifies physical laws (mass proportionality, energy sign, and symmetry)
+    ├── PhaseCalculationTest.java   # Validates core sensible and latent heat formula calculations
+    ├── PhaseTransitionTest.java    # Tests complete multi-phase heating and cooling paths across boundaries
+    └── PhaseZeroChangeTest.java    # Validates exact-boundary states, micro-steps, and zero-energy checks
 ```
 
-### Example
+---
 
-```java
-double energy = Main.calculateEnergy(250, 20, 80);
-System.out.println(energy); // 62760.0 J
+## Usage Example 
+When you run the program, you will be prompted to enter the mass in grams, initial temperature in Celsius, and final temperature in Celsius:
+
+```text
+Enter mass (g), initial temp (°C), and final temp (°C):
+50
+-10
+110
+
+Total Mass: 50.00 Grams
+Initial Temperature: -10.00 initialCelsius
+Final Temperature: 110.00 finalCelsius
+
+Current Energy Stored: 156695.00 Joules
+
+Total Energy Required: 156695.00 Joules
 ```
-
-This example calculates the energy required to heat 250 grams of liquid water from 20°C to 80°C.
 
 - A positive result indicates energy absorbed.
 - A negative result indicates energy released.
@@ -117,7 +140,7 @@ Zero mass is permitted and produces zero energy for otherwise valid inputs.
 
 The project uses JUnit 5 for automated testing.
 
-**Current test status: 42/42 tests passing.**
+**Current test status: 27/27 tests passing.**
 
 The test suite covers:
 
@@ -153,11 +176,8 @@ The calculator currently includes phase-specific energy calculations, latent hea
 
 ## Future Improvements
 
-- Simplify overlapping conditional logic.
-- Improve the organization and reuse of phase-transition calculations.
-- Expand testing for exact-boundary and numerical edge cases.
-- Review the model's treatment of starting and ending states at 0°C and 100°C.
-- Improve diagnostic output and general code maintainability.
+* Testing & Quality Assurance: Implement unit tests (e.g., JUnit) to verify edge cases around phase change thresholds ($0^\circ\text{C}$ and $100^\circ\text{C}$).
+* CLI Polish / UI Expansion: Enhance user prompts or consider expanding input mechanisms beyond the standard command-line scanner.
 
 ## License
 
@@ -169,4 +189,4 @@ See the [`LICENSE`](LICENSE) file for the full license text.
 
 ### AI Assistance
 
-Parts of this project, including documentation and tests, were developed with assistance from ChatGPT. The project author reviewed the generated content and remains responsible for the project's design, implementation, and maintenance.
+Parts of this project, including documentation and tests, were developed with assistance from ChatGPT & Gemini. The project author reviewed the generated content and remains responsible for the project's design, implementation, and maintenance.
