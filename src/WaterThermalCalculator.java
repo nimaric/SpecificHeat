@@ -117,6 +117,11 @@ public class WaterThermalCalculator {
         double energy = 0.0;
         boolean phaseChange = approximatelyEquals(current, 100) || approximatelyEquals(current, 0);
 
+        if (approximatelyEquals(current, target)) {
+            LOGGER.fine("There is no need for calculateLatentHeat() because current = target.");
+            return energy; 
+        }
+
         if (phaseChange){
             if (approximatelyEquals(current, 0)) {
                 LOGGER.fine("Using Phase.FUSION for calculateLatentHeat()");
