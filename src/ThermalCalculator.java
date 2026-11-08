@@ -264,18 +264,17 @@ public class ThermalCalculator {
     SEVERE: Level.SEVERE
     */
 
-    // TODO create INFO logging for calculations
 static {
         ConsoleHandler handler = new ConsoleHandler();
         handler.setLevel(Level.ALL); 
         LOGGER.addHandler(handler);
-        LOGGER.setLevel(Level.INFO); // Change this Variable 
+        LOGGER.setLevel(Level.WARNING); // Change this Variable 
         LOGGER.setUseParentHandlers(false); 
 
         // Check if the current level is something other than INFO
-        if (LOGGER.getLevel() != Level.INFO) {
+        if (LOGGER.getLevel() != Level.WARNING) {
             LOGGER.warning("WARNING: ThermalCalculator logger default level is set to " 
-                + LOGGER.getLevel() + ", but INFO was expected for production runs!");
+                + LOGGER.getLevel() + ", but WARNING was expected for production runs!");
         }
     }
 
