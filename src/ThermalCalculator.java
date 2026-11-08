@@ -32,11 +32,15 @@ import java.util.logging.Level;
 public class ThermalCalculator {
     private static final Logger LOGGER = Logger.getLogger(ThermalCalculator.class.getName());
     private static final double EPSILON = 1e-6;
+    private static final int BIT_22_LIMIT = 4194303;
+    private static final String BIT_22_LIMIT_NAME = "22-bit integer";
     private double mass;
     private double initialTemp;
     private double finalTemp;
     private double fusionTemp;
     private double vaporizationTemp;
+
+    private String materialName;
     
     private final Materials material;
 
@@ -47,10 +51,18 @@ public class ThermalCalculator {
      */
     public ThermalCalculator(Materials material) {
         this.material = material;
+        LOGGER.finest("Declare a new material: " + material);
 
         // Declares fusion and vaporization temps
         this.fusionTemp = material.fusionTemp;
+        LOGGER.finest("Declare Fusion Temp: " + fusionTemp);
         this.vaporizationTemp = material.vaporizationTemp;
+        LOGGER.finest("Declare Vaporization Temp: " + vaporizationTemp);
+
+        // Declares material.name for logging
+        this.materialName = material.name;
+        LOGGER.finest("Declare a new name: " + materialName);
+        LOGGER.finer("Generated Material: " + materialName + " Fusion Temp: " + fusionTemp + " Vaporization Temp: " + vaporizationTemp);
     }
 
     /**
@@ -60,6 +72,7 @@ public class ThermalCalculator {
      */
     public void setMass(double mass) {
         this.mass = mass;
+        LOGGER.finest("Declare mass: " + mass);
     }
 
     /**
@@ -69,6 +82,7 @@ public class ThermalCalculator {
      */
     public void setInitialTemp(double initialTemp) {
         this.initialTemp = initialTemp;
+        LOGGER.finest("Declare Initial Temp: " + initialTemp);
     }
 
     /**
@@ -78,6 +92,7 @@ public class ThermalCalculator {
      */
     public void setFinalTemp(double finalTemp) {
         this.finalTemp = finalTemp;
+        LOGGER.finest("Declare Final Temp: " + finalTemp);
     }
 
     /**
@@ -88,22 +103,29 @@ public class ThermalCalculator {
      */
     public double calculateEnergyRequired() {
         System.out.printf("\nTotal Mass: %.2f Grams%n", mass);
-        System.out.printf("Initial Temperature: %.2f initialCelsius%n", initialTemp);
-        System.out.printf("Final Temperature: %.2f finalCelsius%n", finalTemp);
+        System.out.printf("Initial Temperature: %.2f Celsius%n", initialTemp);
+        System.out.printf("Final Temperature: %.2f Celsius%n", finalTemp);
+        LOGGER.finest("Printed out values of: mass: " + mass + " initialTemp: " + initialTemp + " finalTemp: " + finalTemp);
+        
         InputValidator.validate(mass, initialTemp, finalTemp);
+        LOGGER.finest("Sucessfully Validated: mass: " + mass + " initialTemp: " + initialTemp + " finalTemp: " + finalTemp);
         
         double energy = 0.0;
+        LOGGER.finest("Initialied energy: " + energy);
         double current = initialTemp;
+        LOGGER.finest("Initialied current: " + current);
         double target = finalTemp;
+        LOGGER.finest("Initialied target: " + target);
 
         while (!approximatelyEquals(current, target)) {
-            if (approximatelyEquals(energy, 4194303)) {
-                LOGGER.warning("Calculation Spiralled Out of Control (or hit the 22-bit integer limit)");
+            if (approximatelyEquals(energy, BIT_22_LIMIT)) {
+                LOGGER.severe("Calculation Spiralled Out of Control (or hit the " + BIT_22_LIMIT_NAME + " limit)");
                 System.exit(1);
             }
+            LOGGER.finest("Current energy total does not exceed: the " + BIT_22_LIMIT_NAME);
 
             if (approximatelyEquals(initialTemp, fusionTemp) || approximatelyEquals(initialTemp, vaporizationTemp)) {
-                LOGGER.fine("[INITIAL] calling determineLatentHeat using current: " + current + ", target: " + target);
+                LOGGER.finer("[INITIAL] calling determineLatentHeat using current: " + current + ", target: " + target);
                 energy += determineLatentHeat(current, target);
             }
 
@@ -111,40 +133,53 @@ public class ThermalCalculator {
                 LOGGER.fine("[SOLID] due to current: " + current + ", target: " + target);
                 double endIce = Math.min(target, fusionTemp);
                 energy += calculateSensibleHeat(current, endIce, Phase.SOLID);
+                LOGGER.finest("[SOLID] calculateSensibleHeat Current Energy: " + energy);
                 current = endIce;
-                LOGGER.fine("[SOLID] calling determineLatentHeat using current: " + current + ", target: " + target);
+                LOGGER.finer("[SOLID] Declare Current Temp: " + endIce);
+                LOGGER.finer("[SOLID] calling determineLatentHeat using current: " + current + ", target: " + target);
                 energy += determineLatentHeat(current, target);
+                LOGGER.finest("[SOLID] determineLatentHeat Current Energy: " + energy);
             }
 
             if ((current >= fusionTemp && current < vaporizationTemp && target > current)) {
                 LOGGER.fine("[LIQUID-HEATING] due to current: " + current + ", target: " + target);
                 double endWater = Math.max(Math.min(target, vaporizationTemp), fusionTemp);
                 energy += calculateSensibleHeat(current, endWater, Phase.LIQUID);
+                LOGGER.finest("[LIQUID-HEATING] calculateSensibleHeat Current Energy: " + energy);
                 current = endWater;
-                LOGGER.fine("[LIQUID-HEATING] calling determineLatentHeat using current: " + current + ", target: " + target);
+                LOGGER.finer("[LIQUID-HEATING] Declare Current Temp: " + endWater);
+                LOGGER.finer("[LIQUID-HEATING] calling determineLatentHeat using current: " + current + ", target: " + target);
                 energy += determineLatentHeat(current, target);
+                LOGGER.finest("[LIQUID] determineLatentHeat Current Energy: " + energy);
             }
 
             if ((current > fusionTemp && current <= vaporizationTemp && target < current)) {
                 LOGGER.fine("[LIQUID-COOLING] due to current: " + current + ", target: " + target);
                 double endWater = Math.max(Math.min(target, vaporizationTemp), fusionTemp);
                 energy += calculateSensibleHeat(current, endWater, Phase.LIQUID);
+                LOGGER.finest("[LIQUID-COOLING] calculateSensibleHeat Current Energy: " + energy);
                 current = endWater;
-                LOGGER.fine("[LIQUID-COOLING] calling determineLatentHeat using current: " + current + ", target: " + target);
+                LOGGER.finer("[LIQUID-COOLING] Declare Current Temp: " + endWater);
+                LOGGER.finer("[LIQUID-COOLING] calling determineLatentHeat using current: " + current + ", target: " + target);
                 energy += determineLatentHeat(current, target);
+                LOGGER.finest("[LIQUID-COOLING] determineLatentHeat Current Energy: " + energy);
             }
 
             if ((current >= vaporizationTemp && target > current) || (current > vaporizationTemp)) {
                 LOGGER.fine("[GAS] due to current: " + current + ", target: " + target);
                 double endSteam = Math.max(target, vaporizationTemp);
                 energy += calculateSensibleHeat(current, endSteam, Phase.GAS);
+                LOGGER.finest("[GAS] calculateSensibleHeat Current Energy: " + energy);
                 current = endSteam;
-                LOGGER.fine("[GAS] calling determineLatentHeat using current: " + current + ", target: " + target);
+                LOGGER.finer("[GAS] Declare Current Temp: " + endSteam);
+                LOGGER.finer("[GAS] calling determineLatentHeat using current: " + current + ", target: " + target);
                 energy += determineLatentHeat(current, target);
+                LOGGER.finest("[GAS] determineLatentHeat Current Energy: " + energy);
             } 
         }
 
         System.out.printf("\nCurrent Energy Stored: %.2f Joules%n", energy);
+        LOGGER.finest("Sucessfully printed Energy Stored: " + energy);
         return energy;
     }
 
@@ -157,7 +192,7 @@ public class ThermalCalculator {
             case LIQUID -> specificHeat = material.cLiquid;
             case GAS -> specificHeat = material.cGas;
             default -> {
-                LOGGER.warning("Unknown phase encountered: " + phase);
+                LOGGER.severe("Unknown phase encountered: " + phase);
                 throw new IllegalArgumentException("Unknown phase");
             }
         }
@@ -187,17 +222,18 @@ public class ThermalCalculator {
             LOGGER.fine("Calculating latent heat being released");
             return mass * -latentHeat; 
         } else {
-            LOGGER.severe("Unable to register phase: " + phase);
-            System.exit(1);
-            return 0.0;
+            LOGGER.severe("Unable to register phase transition of " + phase + " using initialTemp: " + initialTemp + " and finalTemp: " + finalTemp);
+            throw new IllegalArgumentException("Unable to register phase transition");
         }
     }
 
     // Determines which phase is correct.
     private double determineLatentHeat(double current, double target){
         double energy = 0.0;
+        LOGGER.finest("Initialied energy: " + energy);
         boolean phaseChange = approximatelyEquals(current, fusionTemp) || approximatelyEquals(current, vaporizationTemp);
-
+        LOGGER.finest("Initialied phaseChange: " + phaseChange);
+        
         if (approximatelyEquals(current, target)) {
             LOGGER.fine("There is no need for calculateLatentHeat() because current = target.");
             return energy; 
@@ -218,40 +254,63 @@ public class ThermalCalculator {
         return energy;
     }
 
-    static {
-        // By default, Java's console handler might block FINE logs. 
-        // This static block configures the handler to allow verbose logs through.
+    /*
+    FINEST: Level.FINEST
+    FINER: Level.FINER
+    FINE: Level.FINE
+    INFO: Level.INFO
+    WARNING: Level.WARNING // Default
+    SEVERE: Level.SEVERE
+    */
+
+    // TODO create INFO logging for calculations
+static {
         ConsoleHandler handler = new ConsoleHandler();
-        handler.setLevel(Level.ALL); // Allow all levels of logs
+        handler.setLevel(Level.ALL); 
         LOGGER.addHandler(handler);
-        LOGGER.setLevel(Level.ALL);   // Set the logger to capture everything
-        LOGGER.setUseParentHandlers(false); // Prevent duplicate logging outputs
+        LOGGER.setLevel(Level.WARNING); // Change this Variable 
+        LOGGER.setUseParentHandlers(false); 
+
+        // Check if the current level is something other than WARNING
+        if (LOGGER.getLevel() != Level.WARNING) {
+            LOGGER.warning("WARNING: ThermalCalculator logger default level is set to " 
+                + LOGGER.getLevel() + ", but WARNING was expected for production runs!");
+        }
     }
 
     static Scanner scanner = new Scanner(System.in); 
     public static void main(String[] args) {
-        /*
-        Turn ON: Level.FINE
-        TURN OFF: Level.WARNING
-        */
-        Logger.getLogger("src.WaterThermalCalculator").setLevel(Level.WARNING);
+        
 
         System.out.println("Enter mass (g), initial temp (°C), and final temp (°C):");
+        LOGGER.finest("Asking for: mass");
         double mass = scanner.nextDouble();
+        LOGGER.finest("Moved on to asking for: t_i");
         double t_i = scanner.nextDouble();
+        LOGGER.finest("Moved on to asking for: t_f");
         double t_f = scanner.nextDouble();
 
+        // TODO allow user to choose Materials for calculation
         ThermalCalculator calculateEnergy = new ThermalCalculator(Materials.WATER);
+        LOGGER.finest("Created calculator with material: " + "Materials.WATER");
         calculateEnergy.setMass(mass);
+        LOGGER.finest("Set the material's mass: " + mass);
         calculateEnergy.setInitialTemp(t_i);
+        LOGGER.finest("Set the material's initial Temp: " + t_i);
         calculateEnergy.setFinalTemp(t_f);
+        LOGGER.finest("Set the material's final Temp: " + t_f);
 
         // Display results
         double totalEnergy = calculateEnergy.calculateEnergyRequired();
+        LOGGER.finest("Received totalEnergy: " + totalEnergy);
         System.out.printf("\nTotal Energy Required: %.2f Joules%n", totalEnergy);
+        LOGGER.finest("Printed out totalEnergy: " + totalEnergy);
     }
 
     private boolean approximatelyEquals(double a, double b) {
-        return Math.abs(a - b) < EPSILON;
+        LOGGER.finest("Received a request to determine equality of a: " + a + " and b: " + b);
+        boolean equal = Math.abs(a - b) < EPSILON;
+        LOGGER.finer(a + " and " + b + " equality is " + equal);
+        return equal;
     }
 }
