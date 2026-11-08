@@ -17,7 +17,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import src.WaterThermalCalculator;
+import src.ThermalCalculator;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -63,7 +63,7 @@ class ConsoleIntegrationTest {
         provideConsoleInput("10.0 20.0 30.0");
 
         // Run your application runner method
-        WaterThermalCalculator.main(new String[]{});
+        ThermalCalculator.main(new String[]{});
 
         String output = getConsoleOutput();
 
@@ -78,7 +78,7 @@ class ConsoleIntegrationTest {
         // Simulating user input crossing all thresholds: mass=50.0, t_i=-10.0, t_f=110.0
         provideConsoleInput("50.0 -10.0 110.0");
 
-        WaterThermalCalculator.main(new String[]{});
+        ThermalCalculator.main(new String[]{});
 
         String output = getConsoleOutput();
 
@@ -94,7 +94,7 @@ class ConsoleIntegrationTest {
 
         IllegalArgumentException exception = org.junit.jupiter.api.Assertions.assertThrows(
             IllegalArgumentException.class, 
-            () -> WaterThermalCalculator.main(new String[]{})
+            () -> ThermalCalculator.main(new String[]{})
         );
         
         assertTrue(exception.getMessage().contains("Mass cannot be negative"));
@@ -108,7 +108,7 @@ class ConsoleIntegrationTest {
 
         IllegalArgumentException exception = org.junit.jupiter.api.Assertions.assertThrows(
             IllegalArgumentException.class, 
-            () -> WaterThermalCalculator.main(new String[]{})
+            () -> ThermalCalculator.main(new String[]{})
         );
         
         assertTrue(exception.getMessage().contains("Absolute Zero"));

@@ -19,18 +19,18 @@ import org.junit.jupiter.api.Test;
 
 import src.Materials;
 import src.Phase;
-import src.WaterThermalCalculator;
+import src.ThermalCalculator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PhaseCalculationTest {
 
     private static final double TOLERANCE = 0.001;
-    private WaterThermalCalculator calculator;
+    private ThermalCalculator calculator;
 
     @BeforeEach
     void setUp() {
-        calculator = new WaterThermalCalculator(Materials.WATER);
+        calculator = new ThermalCalculator(Materials.WATER);
     }
 
     @Test
