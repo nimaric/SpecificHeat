@@ -43,6 +43,8 @@ public class WaterThermalCalculator {
     private double mass;
     private double initialTemp;
     private double finalTemp;
+    private double fusionTemp;
+    private double vaporizationTemp;
 
     public void setMass(double mass) {
         this.mass = mass;
@@ -59,6 +61,10 @@ public class WaterThermalCalculator {
     // Constructor injection: Pass any material you want!
     public WaterThermalCalculator(Materials material) {
         this.material = material;
+
+        // Declares fusion and vaporization temps
+        this.fusionTemp = material.fusionTemp;
+        this.vaporizationTemp = material.vaporizationTemp;
     }
 
     private static final double EPSILON = 1e-6;
@@ -115,7 +121,7 @@ public class WaterThermalCalculator {
     // Determines which phase is correct.
     public double detmineLatentHeat(double current, double target){
         double energy = 0.0;
-        boolean phaseChange = approximatelyEquals(current, 100) || approximatelyEquals(current, 0);
+        boolean phaseChange = approximatelyEquals(current, fusionTemp) || approximatelyEquals(current, vaporizationTemp);
 
         if (approximatelyEquals(current, target)) {
             LOGGER.fine("There is no need for calculateLatentHeat() because current = target.");
@@ -123,10 +129,10 @@ public class WaterThermalCalculator {
         }
 
         if (phaseChange){
-            if (approximatelyEquals(current, 0)) {
+            if (approximatelyEquals(current, fusionTemp)) {
                 LOGGER.fine("Using Phase.FUSION for calculateLatentHeat()");
                 energy += calculateLatentHeat(current, target, Phase.FUSION);
-            } else if (approximatelyEquals(current, 100)) {
+            } else if (approximatelyEquals(current, vaporizationTemp)) {
                 LOGGER.fine("Using Phase.VAPORIZATION for calculateLatentHeat()");
                 energy += calculateLatentHeat(current, target, Phase.VAPORIZATION);
             }
@@ -154,41 +160,41 @@ public class WaterThermalCalculator {
                 System.exit(1);
             }
 
-            if (approximatelyEquals(initialTemp, 0) || approximatelyEquals(initialTemp, 100)) {
+            if (approximatelyEquals(initialTemp, fusionTemp) || approximatelyEquals(initialTemp, vaporizationTemp)) {
                 LOGGER.fine("[INITIAL] calling determineLatentHeat using current: " + current + ", target: " + target);
                 energy += detmineLatentHeat(current, target);
             }
 
-            if ((current < 0.0) || (current <= 0.0 && target < current)) {
+            if ((current < fusionTemp) || (current <= fusionTemp && target < current)) {
                 LOGGER.fine("[SOLID] due to current: " + current + ", target: " + target);
-                double endIce = Math.min(target, 0.0);
+                double endIce = Math.min(target, fusionTemp);
                 energy += calculateSensibleHeat(current, endIce, Phase.SOLID);
                 current = endIce;
                 LOGGER.fine("[SOLID] calling determineLatentHeat using current: " + current + ", target: " + target);
                 energy += detmineLatentHeat(current, target);
             }
 
-            if ((current >= 0.0 && current < 100.0 && target > current)) {
+            if ((current >= fusionTemp && current < vaporizationTemp && target > current)) {
                 LOGGER.fine("[LIQUID-HEATING] due to current: " + current + ", target: " + target);
-                double endWater = Math.max(Math.min(target, 100.0), 0);
+                double endWater = Math.max(Math.min(target, vaporizationTemp), fusionTemp);
                 energy += calculateSensibleHeat(current, endWater, Phase.LIQUID);
                 current = endWater;
                 LOGGER.fine("[LIQUID-HEATING] calling determineLatentHeat using current: " + current + ", target: " + target);
                 energy += detmineLatentHeat(current, target);
             }
 
-            if ((current > 0.0 && current <= 100.0 && target < current)) {
+            if ((current > fusionTemp && current <= vaporizationTemp && target < current)) {
                 LOGGER.fine("[LIQUID-COOLING] due to current: " + current + ", target: " + target);
-                double endWater = Math.max(Math.min(target, 100.0), 0);
+                double endWater = Math.max(Math.min(target, vaporizationTemp), fusionTemp);
                 energy += calculateSensibleHeat(current, endWater, Phase.LIQUID);
                 current = endWater;
                 LOGGER.fine("[LIQUID-COOLING] calling determineLatentHeat using current: " + current + ", target: " + target);
                 energy += detmineLatentHeat(current, target);
             }
 
-            if ((current >= 100.0 && target > current) || (current > 100.0)) {
+            if ((current >= vaporizationTemp && target > current) || (current > vaporizationTemp)) {
                 LOGGER.fine("[GAS] due to current: " + current + ", target: " + target);
-                double endSteam = Math.max(target, 100);
+                double endSteam = Math.max(target, vaporizationTemp);
                 energy += calculateSensibleHeat(current, endSteam, Phase.GAS);
                 current = endSteam;
                 LOGGER.fine("[GAS] calling determineLatentHeat using current: " + current + ", target: " + target);
