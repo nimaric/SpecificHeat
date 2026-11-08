@@ -7,6 +7,7 @@
 
 /*
  * Test cases developed with assistance from ChatGPT (OpenAI).
+ * Test cases developed with assistance from Gemini (Google).
  * Reviewed and maintained by the project author.
  */
 
