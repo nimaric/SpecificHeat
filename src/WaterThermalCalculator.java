@@ -15,6 +15,10 @@ public class WaterThermalCalculator {
 
     private static final double EPSILON = 1e-6;
 
+    private boolean approximatelyEquals(double a, double b) {
+        return Math.abs(a - b) < EPSILON;
+    }
+
     private double massGrams;
     private double initialTemp;
     private double finalTemp;
@@ -45,7 +49,7 @@ public class WaterThermalCalculator {
         }
 
         // Phase 4: Vaporization (At exactly 100°C if the target wants to go higher)
-        if (Math.abs(current - 100.0) < EPSILON && target < 100.0) {
+        if (approximatelyEquals(current, 100) && target < 100.0) {
             energy -= calculateLatentHeat(LATENT_VAPORIZATION);
             System.out.printf("[Vapor] Current Energy:  %.2f Energy%n", energy);
         }
@@ -59,7 +63,7 @@ public class WaterThermalCalculator {
         }
 
         // Phase 2: Melting (At exactly 0°C if the target wants to go higher)
-        if (Math.abs(current) < EPSILON && target < 0.0) {
+        if (approximatelyEquals(current, 0) && target < 0.0) {
             energy -= calculateLatentHeat(LATENT_FUSION);
             System.out.printf("[Melt] Current Energy:  %.2f Energy%n", energy);
             // We don't advance 'current' past 0 yet because liquid water starts heating FROM 0°C
@@ -90,7 +94,7 @@ public class WaterThermalCalculator {
         }
 
         // Phase 2: Melting (At exactly 0°C if the target wants to go higher)
-        if (Math.abs(current) < EPSILON && target > 0.0) {
+        if (approximatelyEquals(current, 0) && target > 0.0) {
             energy += calculateLatentHeat(LATENT_FUSION);
             System.out.printf("Current Energy:  %.2f Energy%n", energy);
             // We don't advance 'current' past 0 yet because liquid water starts heating FROM 0°C
@@ -105,7 +109,7 @@ public class WaterThermalCalculator {
         }
 
         // Phase 4: Vaporization (At exactly 100°C if the target wants to go higher)
-        if (Math.abs(current - 100.0) < EPSILON && target > 100.0) {
+        if (approximatelyEquals(current, 100) && target > 100.0) {
             energy += calculateLatentHeat(LATENT_VAPORIZATION);
             System.out.printf("Current Energy:  %.2f Energy%n", energy);
         }
