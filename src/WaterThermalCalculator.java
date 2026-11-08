@@ -206,7 +206,7 @@ public class WaterThermalCalculator {
         Turn ON: Level.FINE
         TURN OFF: Level.WARNING
         */
-        Logger.getLogger("src.WaterThermalCalculator").setLevel(Level.FINE);
+        Logger.getLogger("src.WaterThermalCalculator").setLevel(Level.WARNING);
 
         System.out.println("Enter mass (g), initial temp (°C), and final temp (°C):");
         double mass = scanner.nextDouble();
