@@ -1,3 +1,16 @@
+/*
+ * SpecificHeat - Java-based thermal energy calculator
+ * Copyright (C) 2026 Aldine Dane Fabro
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+/*
+ * Test cases developed with assistance from ChatGPT (OpenAI).
+ * Test cases developed with assistance from Gemini (Google).
+ * Reviewed and maintained by the project author.
+ */
+
 package test.integration;
 
 import org.junit.jupiter.api.DisplayName;
