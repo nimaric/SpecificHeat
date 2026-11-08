@@ -21,9 +21,25 @@
 package src;
 
 import java.util.Scanner;
+import java.util.logging.Logger;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
 
 public class WaterThermalCalculator {
+    private static final Logger LOGGER = Logger.getLogger(WaterThermalCalculator.class.getName());
+    
+    static {
+        // By default, Java's console handler might block FINE logs. 
+        // This static block configures the handler to allow verbose logs through.
+        ConsoleHandler handler = new ConsoleHandler();
+        handler.setLevel(Level.ALL); // Allow all levels of logs
+        LOGGER.addHandler(handler);
+        LOGGER.setLevel(Level.ALL);   // Set the logger to capture everything
+        LOGGER.setUseParentHandlers(false); // Prevent duplicate logging outputs
+    }
+
     private final Materials material;
+
     private double mass;
     private double initialTemp;
     private double finalTemp;
@@ -52,31 +68,45 @@ public class WaterThermalCalculator {
     }
 
     public double calculateSensibleHeat(double initialTemp, double finalTemp, Phase phase){
+        LOGGER.fine("Calculating sensible heat -> Mass: " + mass + ", InitialT: " + initialTemp + ", FinalT: " + finalTemp + ", Phase: " + phase);
+
         double specificHeat;
         switch(phase) {
             case SOLID -> specificHeat = material.cSolid;
             case LIQUID -> specificHeat = material.cLiquid;
             case GAS -> specificHeat = material.cGas;
-            default -> throw new IllegalArgumentException("Unknown phase");
+            default -> {
+                LOGGER.warning("Unknown phase encountered: " + phase);
+                throw new IllegalArgumentException("Unknown phase");
+            }
         }
-        return mass * specificHeat * (finalTemp - initialTemp);
+        double result = mass * specificHeat * (finalTemp - initialTemp);
+        LOGGER.fine("Sensible heat result: " + result);
+        return result;
     }
 
     public double calculateLatentHeat(double initialTemp, double finalTempt, Phase phase){
+        LOGGER.fine("Calculating latent heat -> Mass: " + mass + ", InitialT: " + initialTemp + ", FinalT: " + finalTemp + ", Phase: " + phase);
+
         double latentHeat;
         switch(phase) {
             case FUSION -> latentHeat = material.latentFusion;
             case VAPORIZATION -> latentHeat = material.latentVaporization;
-            default -> throw new IllegalArgumentException("Unknown phase");
+            default -> {
+                LOGGER.warning("Unknown phase encountered: " + phase);
+                throw new IllegalArgumentException("Unknown phase");
+            }
         }
 
         if (initialTemp < finalTemp){ 
+            LOGGER.fine("Calculating latent heat being absorbed");
             return mass * latentHeat; 
         }
         if (initialTemp > finalTemp){ 
+            LOGGER.fine("Calculating latent heat being released");
             return mass * -latentHeat; 
         } else {
-            System.out.println("Latent Heat can't be calculated");
+            LOGGER.severe("Unable to register phase: " + phase);
             System.exit(1);
             return 0.0;
         }
@@ -89,12 +119,14 @@ public class WaterThermalCalculator {
 
         if (phaseChange){
             if (approximatelyEquals(current, 0)) {
+                LOGGER.fine("Using Phase.FUSION for calculateLatentHeat()");
                 energy += calculateLatentHeat(current, target, Phase.FUSION);
-            }
-
-            if (approximatelyEquals(current, 100)) {
+            } else if (approximatelyEquals(current, 100)) {
+                LOGGER.fine("Using Phase.VAPORIZATION for calculateLatentHeat()");
                 energy += calculateLatentHeat(current, target, Phase.VAPORIZATION);
             }
+        } else {
+            LOGGER.fine("There is no need for calculateLatentHeat(). phaseChange: " + phaseChange);
         }
 
         return energy;
@@ -113,39 +145,47 @@ public class WaterThermalCalculator {
 
         while (!approximatelyEquals(current, target)) {
             if (approximatelyEquals(energy, 4194303)) {
-                System.out.printf("\nCurrent Energy: %.2f Energy%n", energy);
-                System.out.println("Calculation Spiralled Out of Control (or hit the 22-bit integer limit)");
+                LOGGER.warning("Calculation Spiralled Out of Control (or hit the 22-bit integer limit)");
                 System.exit(1);
             }
 
             // Checks if material starts at phase changes
+            LOGGER.fine("[INITIAL] calling determineLatentHeat using current: " + current + ", target: " + target);
             energy += detmineLatentHeat(current, target);
 
             if ((current < 0.0) || (current <= 0.0 && target < current)) {
+                LOGGER.fine("[SOLID] due to current: " + current + ", target: " + target);
                 double endIce = Math.min(target, 0.0);
                 energy += calculateSensibleHeat(current, endIce, Phase.SOLID);
                 current = endIce;
+                LOGGER.fine("[SOLID] calling determineLatentHeat using current: " + current + ", target: " + target);
                 energy += detmineLatentHeat(current, target);
             }
 
             if ((current >= 0.0 && current < 100.0 && target > current)) {
+                LOGGER.fine("[LIQUID-HEATING] due to current: " + current + ", target: " + target);
                 double endWater = Math.max(Math.min(target, 100.0), 0);
                 energy += calculateSensibleHeat(current, endWater, Phase.LIQUID);
                 current = endWater;
+                LOGGER.fine("[LIQUID-HEATING] calling determineLatentHeat using current: " + current + ", target: " + target);
                 energy += detmineLatentHeat(current, target);
             }
 
             if ((current > 0.0 && current <= 100.0 && target < current)) {
+                LOGGER.fine("[LIQUID-COOLING] due to current: " + current + ", target: " + target);
                 double endWater = Math.max(Math.min(target, 100.0), 0);
                 energy += calculateSensibleHeat(current, endWater, Phase.LIQUID);
                 current = endWater;
+                LOGGER.fine("[LIQUID-COOLING] calling determineLatentHeat using current: " + current + ", target: " + target);
                 energy += detmineLatentHeat(current, target);
             }
 
             if ((current >= 100.0 && target > current) || (current > 100.0)) {
+                LOGGER.fine("[GAS] due to current: " + current + ", target: " + target);
                 double endSteam = Math.max(target, 100);
                 energy += calculateSensibleHeat(current, endSteam, Phase.GAS);
                 current = endSteam;
+                LOGGER.fine("[GAS] calling determineLatentHeat using current: " + current + ", target: " + target);
                 energy += detmineLatentHeat(current, target);
             } 
         }
@@ -156,6 +196,12 @@ public class WaterThermalCalculator {
 
     static Scanner scanner = new Scanner(System.in); 
     public static void main(String[] args) {
+        /*
+        Turn ON: Level.FINE
+        TURN OFF: Level.WARNING
+        */
+        Logger.getLogger("src.WaterThermalCalculator").setLevel(Level.FINE);
+
         System.out.println("Enter mass (g), initial temp (°C), and final temp (°C):");
         double mass = scanner.nextDouble();
         double t_i = scanner.nextDouble();
