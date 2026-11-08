@@ -16,6 +16,8 @@ package test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import src.Materials;
 import src.WaterThermalCalculator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,7 +30,7 @@ class PhaseTransitionTest {
 
     @BeforeEach
     void setUp() {
-        calculator = new WaterThermalCalculator();
+        calculator = new WaterThermalCalculator(Materials.WATER);
         calculator.setMass(100.0); // Keep mass consistent at 100g for easy tracking
     }
 
