@@ -185,7 +185,7 @@ public class ThermalCalculator {
         }
     }
     private double calculateSensibleHeat(double initialTemp, double finalTemp, Phase phase){
-        LOGGER.fine("Calculating sensible heat -> Mass: " + mass + ", InitialT: " + initialTemp + ", FinalT: " + finalTemp + ", Phase: " + phase);
+        LOGGER.info("Calculating sensible heat -> Mass: " + mass + ", InitialT: " + initialTemp + ", FinalT: " + finalTemp + ", Phase: " + phase);
 
         double specificHeat;
         switch(phase) {
@@ -203,7 +203,7 @@ public class ThermalCalculator {
     }
 
     private double calculateLatentHeat(double initialTemp, double finalTemp, Phase phase){
-        LOGGER.fine("Calculating latent heat -> Mass: " + mass + ", InitialT: " + initialTemp + ", FinalT: " + finalTemp + ", Phase: " + phase);
+        LOGGER.info("Calculating latent heat -> Mass: " + mass + ", InitialT: " + initialTemp + ", FinalT: " + finalTemp + ", Phase: " + phase);
 
         double latentHeat;
         switch(phase) {
@@ -269,13 +269,13 @@ static {
         ConsoleHandler handler = new ConsoleHandler();
         handler.setLevel(Level.ALL); 
         LOGGER.addHandler(handler);
-        LOGGER.setLevel(Level.WARNING); // Change this Variable 
+        LOGGER.setLevel(Level.INFO); // Change this Variable 
         LOGGER.setUseParentHandlers(false); 
 
-        // Check if the current level is something other than WARNING
-        if (LOGGER.getLevel() != Level.WARNING) {
+        // Check if the current level is something other than INFO
+        if (LOGGER.getLevel() != Level.INFO) {
             LOGGER.warning("WARNING: ThermalCalculator logger default level is set to " 
-                + LOGGER.getLevel() + ", but WARNING was expected for production runs!");
+                + LOGGER.getLevel() + ", but INFO was expected for production runs!");
         }
     }
 
