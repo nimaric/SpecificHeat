@@ -5,6 +5,9 @@ package src;
  * phase transition temperatures, and latent heats.
  */
 public class Materials {
+    // Material's name
+    String name;
+
     // Specific Heats (J / g * °C) 
     double cSolid;
     double cLiquid;
@@ -19,6 +22,7 @@ public class Materials {
     double latentVaporization;
 
     public Materials(
+        String name,
         double cSolid, 
         double cLiquid, 
         double cGas, 
@@ -27,6 +31,7 @@ public class Materials {
         double latentFusion, 
         double latentVaporization
     ) {
+        this.name = name;
         this.cSolid = cSolid;
         this.cLiquid = cLiquid;
         this.cGas = cGas;
@@ -37,6 +42,7 @@ public class Materials {
     }
 
     public static final Materials WATER = new Materials(
+        "Water",
         2.09, // cSolid (ice)
         4.184,// cLiquid (water)
         2.01, // cGas (steam)
@@ -47,6 +53,7 @@ public class Materials {
     );
 
     public static final Materials ETHANOL = new Materials(
+        "Ethanol",
         2.44,  // cSolid (Specific heat of solid ethanol, J/g°C)
         2.46,  // cLiquid (Specific heat of liquid ethanol, J/g°C)
         1.43,  // cGas (Specific heat of gas ethanol, J/g°C)
