@@ -25,8 +25,8 @@ import java.util.logging.Logger;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 
-public class WaterThermalCalculator {
-    private static final Logger LOGGER = Logger.getLogger(WaterThermalCalculator.class.getName());
+public class ThermalCalculator {
+    private static final Logger LOGGER = Logger.getLogger(ThermalCalculator.class.getName());
     
     static {
         // By default, Java's console handler might block FINE logs. 
@@ -59,7 +59,7 @@ public class WaterThermalCalculator {
     }
 
     // Constructor injection: Pass any material you want!
-    public WaterThermalCalculator(Materials material) {
+    public ThermalCalculator(Materials material) {
         this.material = material;
 
         // Declares fusion and vaporization temps
@@ -219,7 +219,7 @@ public class WaterThermalCalculator {
         double t_i = scanner.nextDouble();
         double t_f = scanner.nextDouble();
 
-        WaterThermalCalculator calculateEnergy = new WaterThermalCalculator(Materials.WATER);
+        ThermalCalculator calculateEnergy = new ThermalCalculator(Materials.WATER);
         calculateEnergy.setMass(mass);
         calculateEnergy.setInitialTemp(t_i);
         calculateEnergy.setFinalTemp(t_f);
