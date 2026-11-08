@@ -25,6 +25,10 @@ import java.util.logging.Logger;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 
+/**
+ * Calculates thermal energy changes, sensible heat, and latent heat 
+ * across multi-phase states for various materials using dynamic properties.
+ */
 public class ThermalCalculator {
     private static final Logger LOGGER = Logger.getLogger(ThermalCalculator.class.getName());
     private static final double EPSILON = 1e-6;
@@ -36,7 +40,11 @@ public class ThermalCalculator {
     
     private final Materials material;
 
-    // Constructor injection: Pass any material you want!
+    /**
+     * Constructs a thermal calculator for a specific material.
+     * 
+     * @param material The material properties to use for calculations.
+     */
     public ThermalCalculator(Materials material) {
         this.material = material;
 
@@ -45,19 +53,39 @@ public class ThermalCalculator {
         this.vaporizationTemp = material.vaporizationTemp;
     }
 
+    /**
+     * Sets the mass of the material.
+     * 
+     * @param mass The mass in grams.
+     */
     public void setMass(double mass) {
         this.mass = mass;
     }
 
+    /**
+     * Sets the initial temperature of the material.
+     * 
+     * @param initialTemp The initial temperature in Celsius.
+     */
     public void setInitialTemp(double initialTemp) {
         this.initialTemp = initialTemp;
     }
 
+    /**
+     * Sets the final temperature of the material.
+     * 
+     * @param finalTemp The final temperature in Celsius.
+     */
     public void setFinalTemp(double finalTemp) {
         this.finalTemp = finalTemp;
     }
 
-    // Determines SpecificHeat
+    /**
+     * Calculates the total energy required to change the temperature of the material
+     * from the initial temperature to the final temperature, considering phase changes.
+     * 
+     * @return The total energy in Joules.
+     */
     public double calculateEnergyRequired() {
         System.out.printf("\nTotal Mass: %.2f Grams%n", mass);
         System.out.printf("Initial Temperature: %.2f initialCelsius%n", initialTemp);
