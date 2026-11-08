@@ -7,6 +7,9 @@
 
 package src;
 
+/**
+ * Validates input parameters for thermal energy calculations.
+ */
 public class InputValidator {
     public static boolean validate(
         double mass, 

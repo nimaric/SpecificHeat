@@ -1,5 +1,9 @@
 package src;
 
+/**
+ * Represents the thermal properties of a material, including specific heats, 
+ * phase transition temperatures, and latent heats.
+ */
 public class Materials {
     // Specific Heats (J / g * °C) 
     double cSolid;
