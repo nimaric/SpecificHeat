@@ -18,18 +18,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import src.Materials;
-import src.WaterThermalCalculator;
+import src.ThermalCalculator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PhaseZeroChangeTest {
 
     private static final double TOLERANCE = 0.001;
-    private WaterThermalCalculator calculator;
+    private ThermalCalculator calculator;
 
     @BeforeEach
     void setUp() {
-        calculator = new WaterThermalCalculator(Materials.WATER);
+        calculator = new ThermalCalculator(Materials.WATER);
         calculator.setMass(100.0); // 100 grams
     }
 
