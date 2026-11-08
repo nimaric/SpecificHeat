@@ -149,6 +149,11 @@ public class WaterThermalCalculator {
                 System.exit(1);
             }
 
+            if (approximatelyEquals(initialTemp, 0) || approximatelyEquals(initialTemp, 100)) {
+                LOGGER.fine("[INITIAL] calling determineLatentHeat using current: " + current + ", target: " + target);
+                energy += detmineLatentHeat(current, target);
+            }
+
             if ((current < 0.0) || (current <= 0.0 && target < current)) {
                 LOGGER.fine("[SOLID] due to current: " + current + ", target: " + target);
                 double endIce = Math.min(target, 0.0);
