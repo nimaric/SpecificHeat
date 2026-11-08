@@ -32,8 +32,7 @@ import java.util.logging.Level;
 public class ThermalCalculator {
     private static final Logger LOGGER = Logger.getLogger(ThermalCalculator.class.getName());
     private static final double EPSILON = 1e-6;
-    private static final int BIT_22_LIMIT = 4194303;
-    private static final String BIT_22_LIMIT_NAME = "22-bit integer";
+    private static final int ITERATION_LIMIT = 30;
     private double mass;
     private double initialTemp;
     private double finalTemp;
@@ -113,12 +112,11 @@ public class ThermalCalculator {
         double target = finalTemp;
         LOGGER.finest("Initialied target: " + target);
 
+        int i = 0;
         while (!approximatelyEquals(current, target)) {
-            if (approximatelyEquals(energy, BIT_22_LIMIT)) {
-                LOGGER.severe("Calculation Spiralled Out of Control (or hit the " + BIT_22_LIMIT_NAME + " limit)");
-                System.exit(1);
-            }
-            LOGGER.finest("Current energy total does not exceed: the " + BIT_22_LIMIT_NAME);
+            // Checks if i does not exeed ITERATION_LIMIT, then iterate i
+            checkIterationLimit(i);
+            i++;
 
             if (approximatelyEquals(initialTemp, fusionTemp) || approximatelyEquals(initialTemp, vaporizationTemp)) {
                 LOGGER.finer("[INITIAL] calling determineLatentHeat using current: " + current + ", target: " + target);
@@ -179,6 +177,13 @@ public class ThermalCalculator {
         return energy;
     }
 
+    private void checkIterationLimit(int iteration) {
+        if (iteration > ITERATION_LIMIT) {
+            throw new IllegalStateException(
+                "Hit " + ITERATION_LIMIT + " limit of phase calculation"
+            );
+        }
+    }
     private double calculateSensibleHeat(double initialTemp, double finalTemp, Phase phase){
         LOGGER.fine("Calculating sensible heat -> Mass: " + mass + ", InitialT: " + initialTemp + ", FinalT: " + finalTemp + ", Phase: " + phase);
 
