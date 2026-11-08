@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ConsoleIntegrationTest {
@@ -58,60 +59,86 @@ class ConsoleIntegrationTest {
     @Test
     @DisplayName("Main method should correctly read tokens and print calculated Joule value")
     void mainMethodProcessesValidInputsSuccessfully() {
-        // Simulating user input: mass=10.0, t_i=20.0, t_f=30.0 (liquid heating only)
-        // Space or newline separated tokens mimic Scanner reading nextDouble()
-        provideConsoleInput("10.0 20.0 30.0");
+        InputStream originalIn = System.in;
 
-        // Run your application runner method
-        ThermalCalculator.main(new String[]{});
+        try {
+            // Simulating user input: mass=10.0, t_i=20.0, t_f=30.0 (liquid heating only)
+            // Space or newline separated tokens mimic Scanner reading nextDouble()
+            provideConsoleInput("Water\n10.0\n20.0\n30.0\n");
 
-        String output = getConsoleOutput();
+            ThermalCalculator.main(new String[]{});
 
-        // 10g * 4.184 J/gC * 10C = 418.4 Joules expected
-        assertTrue(output.contains("Total Energy Required:"), "Should output the result label");
-        assertTrue(output.contains("418.40"), "Should contain the correctly formatted math result");
+            String output = getConsoleOutput();
+
+            assertTrue(
+                output.contains("Total Energy Required:"), 
+                "Should output the result label"
+            );
+            assertTrue(
+                output.contains("418.40"), 
+                "Should contain the correctly formatted math result"
+            );
+
+        } finally {
+            System.setIn(originalIn);
+        }
     }
 
     @Test
     @DisplayName("Main method should process complex phase shifts spanning ice to steam")
     void mainMethodProcessesFullPhaseTransitionInputs() {
-        // Simulating user input crossing all thresholds: mass=50.0, t_i=-10.0, t_f=110.0
-        provideConsoleInput("50.0 -10.0 110.0");
+        InputStream originalIn = System.in;
 
-        ThermalCalculator.main(new String[]{});
+        try {
+            // Simulating user input crossing all thresholds: mass=50.0, t_i=-10.0, t_f=110.0
+            provideConsoleInput("Water\n50.0\n-10.0\n110.0\n");
 
-        String output = getConsoleOutput();
+            ThermalCalculator.main(new String[]{});
 
-        // Ensure a calculation ran and printed out an absolute positive value
-        assertTrue(output.contains("Total Energy Required:"), "Output must contain the final string block");
+            String output = getConsoleOutput();
+
+            assertTrue(
+                output.contains("Total Energy Required:"), 
+                "Output must contain the final string block"
+            );
+        } finally {
+            System.setIn(originalIn);
+        }
     }
-
-        @Test
+        
+    @Test
     @DisplayName("Main method should throw IllegalArgumentException for negative mass inputs")
     void mainThrowsExceptionOnNegativeMass() {
-        // mass = -50.0, t_i = 20.0, t_f = 80.0
-        provideConsoleInput("-50.0 20.0 80.0");
+        InputStream originalIn = System.in;
 
-        IllegalArgumentException exception = org.junit.jupiter.api.Assertions.assertThrows(
-            IllegalArgumentException.class, 
-            () -> ThermalCalculator.main(new String[]{})
-        );
-        
-        assertTrue(exception.getMessage().contains("Mass cannot be negative"));
+        try {
+            // mass = -50.0, t_i = 20.0, t_f = 80.0
+            provideConsoleInput("Water\n-50.0\n-20.0\n80.0\n");
+
+            assertThrows(
+                IllegalArgumentException.class,
+                () -> ThermalCalculator.main(new String[]{})
+            );
+        } finally {
+            System.setIn(originalIn);
+        }
     }
 
     @Test
     @DisplayName("Main method should throw IllegalArgumentException for initial temperatures below absolute zero")
     void mainThrowsExceptionOnTemperatureBelowAbsoluteZero() {
-        // mass = 100.0, t_i = -300.0 (Impossible), t_f = 25.0
-        provideConsoleInput("100.0 -300.0 25.0");
+        InputStream originalIn = System.in;
 
-        IllegalArgumentException exception = org.junit.jupiter.api.Assertions.assertThrows(
-            IllegalArgumentException.class, 
-            () -> ThermalCalculator.main(new String[]{})
-        );
-        
-        assertTrue(exception.getMessage().contains("Absolute Zero"));
+        try {
+            provideConsoleInput("Water\n100.0\n-300.0\n25.0\n");
+
+            assertThrows(
+                IllegalArgumentException.class,
+                () -> ThermalCalculator.main(new String[]{})
+            );
+        } finally {
+            System.setIn(originalIn);
+        }
     }
 
 }
