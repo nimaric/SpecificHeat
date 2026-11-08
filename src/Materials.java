@@ -7,6 +7,8 @@
 
 package src;
 
+import java.util.Locale;
+
 /**
  * Represents the thermal properties of a material, including specific heats, 
  * phase transition temperatures, and latent heats.
@@ -46,6 +48,28 @@ public class Materials {
         this.vaporizationTemp = vaporizationTemp;
         this.latentFusion = latentFusion;
         this.latentVaporization = latentVaporization;
+    }
+
+    // toUpperCase() so switch-case works properly
+    /**
+     * 
+     * @param name
+     * @return
+     */
+    public static Materials getMaterial(String name) {
+        return switch (name.trim().toUpperCase(Locale.ROOT)) {
+            case "WATER"    -> WATER;
+            case "ETHANOL"  -> ETHANOL;
+            case "ALUMINUM" -> ALUMINUM;
+            case "COPPER"   -> COPPER;
+            case "IRON"     -> IRON;
+            case "LEAD"     -> LEAD;
+            case "GOLD"     -> GOLD;
+            case "SULFUR"   -> SULFUR;
+            default -> throw new IllegalArgumentException(
+                "Unsupported material: " + name
+            );
+        };
     }
 
     public static final Materials WATER = new Materials(

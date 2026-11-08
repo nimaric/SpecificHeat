@@ -280,6 +280,11 @@ static {
 
     static Scanner scanner = new Scanner(System.in); 
     public static void main(String[] args) {
+        System.out.println("Enter material name: ");
+        LOGGER.finest("Asking for: material");
+
+        String inputMaterialName = scanner.nextLine();
+        Materials materialProperty = Materials.getMaterial(inputMaterialName);
         
 
         System.out.println("Enter mass (g), initial temp (°C), and final temp (°C):");
@@ -290,8 +295,7 @@ static {
         LOGGER.finest("Moved on to asking for: t_f");
         double t_f = scanner.nextDouble();
 
-        // TODO allow user to choose Materials for calculation
-        ThermalCalculator calculateEnergy = new ThermalCalculator(Materials.WATER);
+        ThermalCalculator calculateEnergy = new ThermalCalculator(materialProperty);
         LOGGER.finest("Created calculator with material: " + "Materials.WATER");
         calculateEnergy.setMass(mass);
         LOGGER.finest("Set the material's mass: " + mass);
