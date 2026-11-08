@@ -23,14 +23,27 @@ package src;
 import java.util.Scanner;
 
 public class WaterThermalCalculator {
-    // Specific heats (J / g * °C)
-    private static final double C_ICE = 2.09;
-    private static final double C_WATER = 4.184;
-    private static final double C_STEAM = 2.01;
+    private final Materials material;
+    private double mass;
+    private double initialTemp;
+    private double finalTemp;
 
-    // Latent heats (J / g)
-    private static final double LATENT_FUSION = 334.0;
-    private static final double LATENT_VAPORIZATION = 2260.0;
+    public void setMass(double mass) {
+        this.mass = mass;
+    }
+
+    public void setInitialTemp(double initialTemp) {
+        this.initialTemp = initialTemp;
+    }
+
+    public void setFinalTemp(double finalTemp) {
+        this.finalTemp = finalTemp;
+    }
+
+    // Constructor injection: Pass any material you want!
+    public WaterThermalCalculator(Materials material) {
+        this.material = material;
+    }
 
     private static final double EPSILON = 1e-6;
 
@@ -38,20 +51,30 @@ public class WaterThermalCalculator {
         return Math.abs(a - b) < EPSILON;
     }
 
-    private double massGrams;
-    private double initialTemp;
-    private double finalTemp;
-
-        public double calculateSpecificHeat(double specificHeat, double initialTemp, double finalTemp){
-        return massGrams * specificHeat * (finalTemp - initialTemp);
+    public double calculateSensibleHeat(double initialTemp, double finalTemp, Phase phase){
+        double specificHeat;
+        switch(phase) {
+            case SOLID -> specificHeat = material.cSolid;
+            case LIQUID -> specificHeat = material.cLiquid;
+            case GAS -> specificHeat = material.cGas;
+            default -> throw new IllegalArgumentException("Unknown phase");
+        }
+        return mass * specificHeat * (finalTemp - initialTemp);
     }
 
-    public double calculateLatentHeat(double latentHeat, double initialTemp, double finalTemp){
+    public double calculateLatentHeat(double initialTemp, double finalTempt, Phase phase){
+        double latentHeat;
+        switch(phase) {
+            case FUSION -> latentHeat = material.latentFusion;
+            case VAPORIZATION -> latentHeat = material.latentVaporization;
+            default -> throw new IllegalArgumentException("Unknown phase");
+        }
+
         if (initialTemp < finalTemp){ 
-            return massGrams * latentHeat; 
+            return mass * latentHeat; 
         }
         if (initialTemp > finalTemp){ 
-            return massGrams * -latentHeat; 
+            return mass * -latentHeat; 
         } else {
             System.out.println("Latent Heat can't be calculated");
             System.exit(1);
@@ -66,11 +89,11 @@ public class WaterThermalCalculator {
 
         if (phaseChange){
             if (approximatelyEquals(current, 0)) {
-                energy += calculateLatentHeat(LATENT_FUSION, current, target);
+                energy += calculateLatentHeat(current, target, Phase.FUSION);
             }
 
             if (approximatelyEquals(current, 100)) {
-                energy += calculateLatentHeat(LATENT_VAPORIZATION, current, target);
+                energy += calculateLatentHeat(current, target, Phase.VAPORIZATION);
             }
         }
 
@@ -79,10 +102,10 @@ public class WaterThermalCalculator {
 
     // Determines SpecificHeat
     public double calculateEnergyRequired() {
-        System.out.printf("\nTotal Mass: %.2f Grams%n", massGrams);
+        System.out.printf("\nTotal Mass: %.2f Grams%n", mass);
         System.out.printf("Initial Temperature: %.2f initialCelsius%n", initialTemp);
         System.out.printf("Final Temperature: %.2f finalCelsius%n", finalTemp);
-        InputValidator.validate(massGrams, initialTemp, finalTemp);
+        InputValidator.validate(mass, initialTemp, finalTemp);
         
         double energy = 0.0;
         double current = initialTemp;
@@ -100,28 +123,28 @@ public class WaterThermalCalculator {
 
             if ((current < 0.0) || (current <= 0.0 && target < current)) {
                 double endIce = Math.min(target, 0.0);
-                energy += calculateSpecificHeat(C_ICE, current, endIce);
+                energy += calculateSensibleHeat(current, endIce, Phase.SOLID);
                 current = endIce;
                 energy += detmineLatentHeat(current, target);
             }
 
             if ((current >= 0.0 && current < 100.0 && target > current)) {
                 double endWater = Math.max(Math.min(target, 100.0), 0);
-                energy += calculateSpecificHeat(C_WATER, current, endWater);
+                energy += calculateSensibleHeat(current, endWater, Phase.LIQUID);
                 current = endWater;
                 energy += detmineLatentHeat(current, target);
             }
 
             if ((current > 0.0 && current <= 100.0 && target < current)) {
                 double endWater = Math.max(Math.min(target, 100.0), 0);
-                energy += calculateSpecificHeat(C_WATER, current, endWater);
+                energy += calculateSensibleHeat(current, endWater, Phase.LIQUID);
                 current = endWater;
                 energy += detmineLatentHeat(current, target);
             }
 
             if ((current >= 100.0 && target > current) || (current > 100.0)) {
                 double endSteam = Math.max(target, 100);
-                energy += calculateSpecificHeat(C_STEAM, current, endSteam);
+                energy += calculateSensibleHeat(current, endSteam, Phase.GAS);
                 current = endSteam;
                 energy += detmineLatentHeat(current, target);
             } 
@@ -131,18 +154,6 @@ public class WaterThermalCalculator {
         return energy;
     }
 
-    public void setMass(double massGrams) {
-        this.massGrams = massGrams;
-    }
-
-    public void setInitialTemp(double initialTemp) {
-        this.initialTemp = initialTemp;
-    }
-
-    public void setFinalTemp(double finalTemp) {
-        this.finalTemp = finalTemp;
-    }
-
     static Scanner scanner = new Scanner(System.in); 
     public static void main(String[] args) {
         System.out.println("Enter mass (g), initial temp (°C), and final temp (°C):");
@@ -150,7 +161,7 @@ public class WaterThermalCalculator {
         double t_i = scanner.nextDouble();
         double t_f = scanner.nextDouble();
 
-        WaterThermalCalculator calculateEnergy = new WaterThermalCalculator();
+        WaterThermalCalculator calculateEnergy = new WaterThermalCalculator(Materials.WATER);
         calculateEnergy.setMass(mass);
         calculateEnergy.setInitialTemp(t_i);
         calculateEnergy.setFinalTemp(t_f);
