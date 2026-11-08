@@ -11,7 +11,7 @@
  * Reviewed and maintained by the project author.
  */
 
-package test;
+package test.phase;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -11,7 +11,7 @@
  * Reviewed and maintained by the project author.
  */
 
-package test;
+package test.property;
 
 import org.junit.jupiter.api.Test;
 
