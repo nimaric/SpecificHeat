@@ -1,30 +1,28 @@
 # SpecificHeat
+*Thermal Energy Calculator*
 
-SpecificHeat is a Java-based thermal energy calculator designed to compute the total energy (in Joules) required to change the temperature and/or phase of water across different states (ice, liquid water, and steam).
+A Java-based material-agnostic thermal energy calculator designed to compute the total energy (in Joules) required to change the temperature and/or phase of various substances across solid, liquid, and gas states.
 
 ## Features
-**Multi-Phase Calculations:** Handles continuous transitions across solid, liquid, and gas phases.
-  * **Ice:**  $2.09 \text{ J/g}\cdot^\circ\text{C}$
-  * **Water:** $4.184 \text{ J/g}\cdot^\circ\text{C}$
-  * **Steam:** $2.01 \text{ J/g}\cdot^\circ\text{C}$
+**Multi-Phase Calculations:** Handles continuous transitions across solid, liquid, and gas phases using dynamic material properties.
 
-**Latent Heat Integration:** Automatically factors in latent heat during phase transitions:
-  * Fusion (Melting/Freezing at $0^\circ\text{C}$): $334.0 \text{ J/g}$
-  * Vaporization (Boiling/Condensation at $100^\circ\text{C}$): $2260.0 \text{ J/g}$
+**Material-Agnostic Architecture:** Supports arbitrary substances (e.g., Water, Ethanol, and more) via constructor injection of custom thermal properties, specific heat capacities, latent heats, and phase-transition temperatures.
 
-**Input Validation (`InputValidator.java`):**
-  * Prevents negative masses and non-finite numbers ($\text{NaN}$ or $\infty$).
-  * Ensures temperatures do not fall below Absolute Zero ($-273.15^\circ\text{C}$).
+**Latent Heat Integration:** Automatically factors in latent heat during phase transitions based on dynamically injected fusion and vaporization temperatures.
 
-**Safe Calculation Loop:** Includes safeguards against infinite loops or calculations exceeding integer/numeric limits.
+**Professional Logging:** Utilizes java.util.logging with custom diagnostic output to trace state transitions, sensible heat calculations, and latent heat determinations during complex heating/cooling cycles.
 
-**Numerical Safeguards:** Precision tolerance ($\epsilon = 10^{-6}$) for float comparisons and infinite loop prevention.
+**Input Validation (InputValidator.java):**
+* Prevents negative masses and non-finite numbers ($\text{NaN}$ or $\infty$).
+* Ensures temperatures do not fall below Absolute Zero ($-273.15^\circ\text{C}$).
+
+**Numerical Safeguards:** Precision tolerance ($\epsilon = 10^{-6}$) for float comparisons, exact-boundary checks, and infinite loop prevention.
 
 ---
 
 ## Physics & Formulas
 
-The total energy change is calculated by summing the **sensible heat** required for temperature changes within a phase and the **latent heat** absorbed or released during phase transitions.
+The total energy change is calculated by summing the sensible heat required for temperature changes within a phase and the latent heat absorbed or released during phase transitions.
 
 ---
 
@@ -40,16 +38,11 @@ Where:
 * $c$ = specific heat capacity ($\text{J}/(\text{g}\cdot^\circ\text{C})$)
 * $\Delta T = T_f - T_i$ = temperature change ($^\circ\text{C}$)
 
-#### Specific Heat Values Used:
-* **Ice ($c_{\text{ice}}$):** $2.09 \text{ J}/(\text{g}\cdot^\circ\text{C})$
-* **Liquid Water ($c_{\text{water}}$):** $4.184 \text{ J}/(\text{g}\cdot^\circ\text{C})$
-* **Steam ($c_{\text{steam}}$):** $2.01 \text{ J}/(\text{g}\cdot^\circ\text{C})$
-
 ---
 
 ### Latent Heat
 
-Phase transitions occurring at constant temperatures ($0^\circ\text{C}$ and $100^\circ\text{C}$) are calculated using:
+Phase transitions occurring at constant temperatures (defined by the material's dynamic `fusionTemp` and `vaporizationTemp`) are calculated using:
 
 $$Q = m \cdot L$$
 
@@ -57,45 +50,32 @@ Where:
 * $m$ = mass ($\text{g}$)
 * $L$ = specific latent heat ($\text{J}/\text{g}$)
 
-#### Latent Heat Values Used:
-* **Latent Heat of Fusion ($L_f$ at $0^\circ\text{C}$):** $334.0 \text{ J}/\text{g}$ (Melting / Freezing)
-* **Latent Heat of Vaporization ($L_v$ at $100^\circ\text{C}$):** $2260.0 \text{ J}/\text{g}$ (Vaporization / Condensation)
-
 > **Note:** Energy is absorbed during melting and vaporization ($\Delta T > 0$), and released during freezing and condensation ($\Delta T < 0$).
 
 ---
 
-### Physical Constants
-
-| Property | Value |
-|---|---:|
-| Specific heat capacity of ice | 2.108 J/(g·°C) |
-| Specific heat capacity of liquid water | 4.184 J/(g·°C) |
-| Specific heat capacity of steam | 1.996 J/(g·°C) |
-| Latent heat of fusion | 334 J/g |
-| Latent heat of vaporization | 2260 J/g |
-
 ## Temperature Boundaries and Model Assumptions
 
-The calculator uses 0°C and 100°C as phase-transition boundaries for water under a standard-pressure model.
+The calculator uses dynamically injected material thresholds (`fusionTemp` and `vaporizationTemp`) as phase-transition boundaries under a standard-pressure model.
 
-- **0°C — Fusion and freezing:** When the temperature reaches 0°C, latent heat of fusion is added when transitioning from ice to liquid water and subtracted when transitioning from liquid water to ice.
-- **100°C — Vaporization and condensation:** When the temperature reaches 100°C, latent heat of vaporization is added when transitioning from liquid water to steam and subtracted when transitioning from steam to liquid water.
+  * **Fusion and freezing:** When the temperature reaches the material's fusion threshold, latent heat of fusion is added when transitioning from solid to liquid and subtracted when transitioning from liquid to solid.
 
-The calculator determines energy contributions using the initial and final temperatures and applies latent heat according to the direction of the temperature transition. It does not currently accept the initial and final states of matter as explicit inputs. Therefore, exact-boundary cases follow the calculator's custom convention, which simplifies phase-transition calculations but may differ from the physical behavior of a substance whose phase is already known.
+  * **Vaporization and condensation:** When the temperature reaches the material's vaporization threshold, latent heat of vaporization is added when transitioning from liquid to gas and subtracted when transitioning from gas to liquid.
 
-A future improvement may introduce explicit phase-state information to distinguish cases that cannot be determined from temperature alone.
+Exact-boundary handling applies smart short-circuiting to prevent unnecessary or erroneous phase transitions when a temperature cycle lands or terminates precisely on a boundary line.
 
 ## Project Structure
 
 ```text
 SpecificHeat/
 └── src/
-    ├── InputValidator.java         # Validates input parameters
-    └── WaterThermalCalculator.java # Core thermal engine & CLI driver
+    ├── InputValidator.java    # Validates input parameters
+    ├── Materials.java         # Material data model and presets (Water, Ethanol, etc.)
+    └── ThermalCalculator.java # Core thermal engine with dynamic boundaries and logging
 └── test/
     ├── ConsoleIntegrationTest.java # Tests command-line I/O streams and main runner execution
     ├── EnergyPropertiesTest.java   # Verifies physical laws (mass proportionality, energy sign, and symmetry)
+    ├── EthanolTest.java            # Verifies ThermalCalculator can handle non-water materials
     ├── PhaseCalculationTest.java   # Validates core sensible and latent heat formula calculations
     ├── PhaseTransitionTest.java    # Tests complete multi-phase heating and cooling paths across boundaries
     └── PhaseZeroChangeTest.java    # Validates exact-boundary states, micro-steps, and zero-energy checks
@@ -106,19 +86,14 @@ SpecificHeat/
 ## Usage Example 
 When you run the program, you will be prompted to enter the mass in grams, initial temperature in Celsius, and final temperature in Celsius:
 
-```text
-Enter mass (g), initial temp (°C), and final temp (°C):
-50
--10
-110
+```java
+// Example using Ethanol with dynamic material properties
+ThermalCalculator calculator = new ThermalCalculator(Materials.ETHANOL);
+calculator.setMass(100.0);
+calculator.setInitialTemp(-120.0);
+calculator.setFinalTemp(50.0);
 
-Total Mass: 50.00 Grams
-Initial Temperature: -10.00 initialCelsius
-Final Temperature: 110.00 finalCelsius
-
-Current Energy Stored: 156695.00 Joules
-
-Total Energy Required: 156695.00 Joules
+double energy = calculator.calculateEnergyRequired();
 ```
 
 - A positive result indicates energy absorbed.
@@ -140,18 +115,13 @@ Zero mass is permitted and produces zero energy for otherwise valid inputs.
 
 The project uses JUnit 5 for automated testing.
 
-**Current test status: 27/27 tests passing.**
+**Current test status:** All tests passing.
 
 The test suite covers:
-
-- Heating and cooling within individual phases.
-- Transitions between phases.
-- Energy absorbed and released.
-- Reverse temperature and phase changes.
-- Invalid numerical inputs.
-- Phase-transition boundaries.
-
-Passing tests confirm that the implementation matches the expectations encoded in the test suite. Additional review of overlapping conditions and exact-boundary behavior remains useful as the calculation logic evolves.
+* Heating and cooling within individual phases across various materials.
+* Multi-phase transitions using dynamic fusion and vaporization boundaries.
+* Energy absorbed and released symmetry.
+* Invalid numerical inputs and exact-boundary edge cases.
 
 ## Technologies
 
@@ -168,16 +138,11 @@ Eclipse Temurin 17.0.16+8
 64-Bit Server VM
 ```
 
-## Project Status
-
-**In development.**
-
-The calculator currently includes phase-specific energy calculations, latent heat calculations, input validation, and an automated test suite. Development is focused on improving the clarity, maintainability, and reliability of the calculation logic.
-
 ## Future Improvements
 
-* Testing & Quality Assurance: Implement unit tests (e.g., JUnit) to verify edge cases around phase change thresholds ($0^\circ\text{C}$ and $100^\circ\text{C}$).
-* CLI Polish / UI Expansion: Enhance user prompts or consider expanding input mechanisms beyond the standard command-line scanner.
+* **Testing & Quality Assurance:** Implement unit tests (e.g., JUnit) to verify edge cases around phase change thresholds ($0^\circ\text{C}$ and $100^\circ\text{C}$).
+* **CLI Polish / UI Expansion:** Enhance user prompts or consider expanding input mechanisms beyond the standard command-line scanner.
+* **Debug & Info:** Enhance existing debug/logging to accurately track and diagnose calculation process.
 
 ## License
 
@@ -187,6 +152,6 @@ You are free to use, study, modify, and redistribute this software under the ter
 
 See the [`LICENSE`](LICENSE) file for the full license text.
 
-### AI Assistance
+## AI Assistance
 
 Parts of this project, including documentation and tests, were developed with assistance from ChatGPT & Gemini. The project author reviewed the generated content and remains responsible for the project's design, implementation, and maintenance.
