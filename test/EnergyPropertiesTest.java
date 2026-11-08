@@ -14,6 +14,8 @@
 package test;
 
 import org.junit.jupiter.api.Test;
+
+import src.Materials;
 import src.WaterThermalCalculator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,7 +27,7 @@ class EnergyPropertiesTest {
 
     // Helper method to keep tests clean and readable
     private double runCalculation(double mass, double t_i, double t_f) {
-        WaterThermalCalculator calculator = new WaterThermalCalculator();
+        WaterThermalCalculator calculator = new WaterThermalCalculator(Materials.WATER);
         calculator.setMass(mass);
         calculator.setInitialTemp(t_i);
         calculator.setFinalTemp(t_f);

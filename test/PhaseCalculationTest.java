@@ -16,6 +16,9 @@ package test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import src.Materials;
+import src.Phase;
 import src.WaterThermalCalculator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,18 +30,17 @@ class PhaseCalculationTest {
 
     @BeforeEach
     void setUp() {
-        calculator = new WaterThermalCalculator();
+        calculator = new WaterThermalCalculator(Materials.WATER);
     }
 
     @Test
     @DisplayName("Specific heat calculation should accurately apply Q = m * c * ΔT")
     void specificHeatCalculatesCorrectly() {
         calculator.setMass(250.0); // 250 grams
-        double specificHeatWater = 4.184;
         
         // Heating liquid water from 20°C to 60°C (ΔT = 40)
         // Expected: 250.0 * 4.184 * 40.0 = 41840.0 Joules
-        double result = calculator.calculateSpecificHeat(specificHeatWater, 20.0, 60.0);
+        double result = calculator.calculateSensibleHeat(20.0, 60.0, Phase.LIQUID);
         
         assertEquals(41840.0, result, TOLERANCE);
     }
@@ -47,11 +49,10 @@ class PhaseCalculationTest {
     @DisplayName("Specific heat calculation should handle negative temperature changes (cooling)")
     void specificHeatHandlesNegativeDeltaT() {
         calculator.setMass(100.0); // 100 grams
-        double specificHeatIce = 2.09;
         
         // Cooling ice from -5°C to -15°C (ΔT = -10)
         // Expected: 100.0 * 2.09 * -10.0 = -2090.0 Joules
-        double result = calculator.calculateSpecificHeat(specificHeatIce, -5.0, -15.0);
+        double result = calculator.calculateSensibleHeat(-5.0, -15.0, Phase.SOLID);
         
         assertEquals(-2090.0, result, TOLERANCE);
     }
@@ -60,11 +61,10 @@ class PhaseCalculationTest {
     @DisplayName("Latent heat calculation should accurately apply Q = m * L")
     void latentHeatCalculatesCorrectly() {
         calculator.setMass(50.0); // 50 grams
-        double latentVaporization = 2260.0;
         
         // Vaporizing 50g of water at 100°C
         // Expected: 50.0 * 2260.0 = 113000.0 Joules
-        double result = calculator.calculateLatentHeat(latentVaporization, 0, 2);
+        double result = calculator.calculateLatentHeat(0, 2, Phase.VAPORIZATION);
         
         assertEquals(113000.0, result, TOLERANCE);
     }
@@ -75,7 +75,7 @@ class PhaseCalculationTest {
         calculator.setMass(500.0);
         
         // Initial and final temperatures match
-        double result = calculator.calculateSpecificHeat(4.184, 25.0, 25.0);
+        double result = calculator.calculateSensibleHeat( 25.0, 25.0, Phase.LIQUID);
         
         assertEquals(0.0, result, TOLERANCE);
     }
@@ -85,8 +85,8 @@ class PhaseCalculationTest {
     void calculationMethodsReturnZeroForZeroMass() {
         calculator.setMass(0.0); // 0 grams
         
-        double specificHeatResult = calculator.calculateSpecificHeat(4.184, 10.0, 90.0);
-        double latentHeatResult = calculator.calculateLatentHeat(334.0, 0, 2);
+        double specificHeatResult = calculator.calculateSensibleHeat(10.0, 90.0, Phase.LIQUID);
+        double latentHeatResult = calculator.calculateLatentHeat(0, 2, Phase.FUSION);
         
         assertEquals(0.0, specificHeatResult, TOLERANCE);
         assertEquals(0.0, latentHeatResult, TOLERANCE);
