@@ -11,7 +11,7 @@
  * Reviewed and maintained by the project author.
  */
 
-package test;
+package test.integration;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
