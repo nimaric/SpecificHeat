@@ -149,10 +149,6 @@ public class WaterThermalCalculator {
                 System.exit(1);
             }
 
-            // Checks if material starts at phase changes
-            LOGGER.fine("[INITIAL] calling determineLatentHeat using current: " + current + ", target: " + target);
-            energy += detmineLatentHeat(current, target);
-
             if ((current < 0.0) || (current <= 0.0 && target < current)) {
                 LOGGER.fine("[SOLID] due to current: " + current + ", target: " + target);
                 double endIce = Math.min(target, 0.0);
