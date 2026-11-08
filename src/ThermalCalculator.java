@@ -39,8 +39,6 @@ public class ThermalCalculator {
     private double finalTemp;
     private double fusionTemp;
     private double vaporizationTemp;
-
-    private String materialName;
     
     private final Materials material;
 
@@ -51,7 +49,7 @@ public class ThermalCalculator {
      */
     public ThermalCalculator(Materials material) {
         this.material = material;
-        LOGGER.finest("Declare a new material: " + material);
+        LOGGER.finest("Declare a new material: " + material.name);
 
         // Declares fusion and vaporization temps
         this.fusionTemp = material.fusionTemp;
@@ -60,9 +58,7 @@ public class ThermalCalculator {
         LOGGER.finest("Declare Vaporization Temp: " + vaporizationTemp);
 
         // Declares material.name for logging
-        this.materialName = material.name;
-        LOGGER.finest("Declare a new name: " + materialName);
-        LOGGER.finer("Generated Material: " + materialName + " Fusion Temp: " + fusionTemp + " Vaporization Temp: " + vaporizationTemp);
+        LOGGER.finer("Generated Material: " + material.name + " Fusion Temp: " + fusionTemp + " Vaporization Temp: " + vaporizationTemp);
     }
 
     /**
@@ -201,7 +197,7 @@ public class ThermalCalculator {
         return result;
     }
 
-    private double calculateLatentHeat(double initialTemp, double finalTempt, Phase phase){
+    private double calculateLatentHeat(double initialTemp, double finalTemp, Phase phase){
         LOGGER.fine("Calculating latent heat -> Mass: " + mass + ", InitialT: " + initialTemp + ", FinalT: " + finalTemp + ", Phase: " + phase);
 
         double latentHeat;
