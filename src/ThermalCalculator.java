@@ -143,52 +143,95 @@ public class ThermalCalculator {
                 energy += determineLatentHeat(current, target);
             }
 
-            if ((current < fusionTemp) || (current <= fusionTemp && target < current)) {
-                LOGGER.finest("[SOLID] due to current: " + current + ", target: " + target);
-                double endIce = Math.min(target, fusionTemp);
-                energy += calculateSensibleHeat(current, endIce, Phase.SOLID);
-                LOGGER.finer("[SOLID] calculateSensibleHeat Current Energy: " + energy);
-                current = endIce;
-                LOGGER.finest("[SOLID] Declare Current Temp: " + endIce);
-                LOGGER.info("[SOLID] calling determineLatentHeat using current: " + current + ", target: " + target);
-                energy += determineLatentHeat(current, target);
-                LOGGER.finer("[SOLID] determineLatentHeat Current Energy: " + energy);
+            if (!approximatelyEquals(current, target)){
+                energy += determinePhaseChange(current, target).getEnergy();
+                LOGGER.fine("determinePhaseChange energy: " + energy);
+                current = determinePhaseChange(current, target).getCurrentTemp();
+                LOGGER.fine("determinePhaseChange current: " + current);
             }
+        }
+        System.out.printf("\nCurrent Energy Stored: %.2f Joules%n", energy);
+        LOGGER.finest("Sucessfully printed Energy Stored: " + energy);
+        return energy;
+    }
 
-            if ((current >= fusionTemp && current < vaporizationTemp && target > current)) {
-                LOGGER.finest("[LIQUID-HEATING] due to current: " + current + ", target: " + target);
-                double endWater = findMinimunWithMinimunCeiling(target, vaporizationTemp, fusionTemp);
-                energy += calculateSensibleHeat(current, endWater, Phase.LIQUID);
-                LOGGER.finer("[LIQUID-HEATING] calculateSensibleHeat Current Energy: " + energy);
-                current = endWater;
-                LOGGER.finest("[LIQUID-HEATING] Declare Current Temp: " + endWater);
-                LOGGER.info("[LIQUID-HEATING] calling determineLatentHeat using current: " + current + ", target: " + target);
-                energy += determineLatentHeat(current, target);
-                LOGGER.finer("[LIQUID] determineLatentHeat Current Energy: " + energy);
-            }
+    public EnergyValues determinePhaseChange(double current, double target){
+    double energy = 0.0;
+    double specificHeat;
 
-            if ((current > fusionTemp && current <= vaporizationTemp && target < current)) {
-                LOGGER.finest("[LIQUID-COOLING] due to current: " + current + ", target: " + target);
-                double endWater = findMinimunWithMinimunCeiling(target, vaporizationTemp, fusionTemp);
-                energy += calculateSensibleHeat(current, endWater, Phase.LIQUID);
-                LOGGER.finer("[LIQUID-COOLING] calculateSensibleHeat Current Energy: " + energy);
-                current = endWater;
-                LOGGER.finest("[LIQUID-COOLING] Declare Current Temp: " + endWater);
-                LOGGER.info("[LIQUID-COOLING] calling determineLatentHeat using current: " + current + ", target: " + target);
-                energy += determineLatentHeat(current, target);
-                LOGGER.finer("[LIQUID-COOLING] determineLatentHeat Current Energy: " + energy);
-            }
+    if (checkSolidPhase(current, target)) {
+        LOGGER.finest("[SOLID] due to current: " + current + ", target: " + target);
+        double endIce = Math.min(target, fusionTemp);
 
-            if ((current >= vaporizationTemp && target > current) || (current > vaporizationTemp)) {
-                LOGGER.finest("[GAS] due to current: " + current + ", target: " + target);
-                double endSteam = Math.max(target, vaporizationTemp);
-                energy += calculateSensibleHeat(current, endSteam, Phase.GAS);
-                LOGGER.finer("[GAS] calculateSensibleHeat Current Energy: " + energy);
-                current = endSteam;
-                LOGGER.finest("[GAS] Declare Current Temp: " + endSteam);
-                LOGGER.info("[GAS] calling determineLatentHeat using current: " + current + ", target: " + target);
-                energy += determineLatentHeat(current, target);
-                LOGGER.finer("[GAS] determineLatentHeat Current Energy: " + energy);
+        specificHeat = determineSpecificHeat(Phase.SOLID);
+        energy += calculateSensibleHeat(specificHeat, current, endIce);
+        LOGGER.finer("[SOLID] calculateSensibleHeat Current Energy: " + energy);
+
+        current = endIce;
+        LOGGER.finest("[SOLID] Declare Current Temp: " + endIce);
+
+        LOGGER.info("[SOLID] calling determineLatentHeat using current: " + current + ", target: " + target);
+        energy += determineLatentHeat(current, target);
+        LOGGER.finer("[SOLID] determineLatentHeat Current Energy: " + energy);
+
+        return new EnergyValues(energy, current);
+
+    } else if (checkLiquidHeatingPhase(current, target)) {
+        LOGGER.finest("[LIQUID-HEATING] due to current: " + current + ", target: " + target);
+        double endWater = findMinimunWithMinimunCeiling(target, vaporizationTemp, fusionTemp);
+
+        specificHeat = determineSpecificHeat(Phase.LIQUID);
+        energy += calculateSensibleHeat(specificHeat, current, endWater);
+        LOGGER.finer("[LIQUID-HEATING] calculateSensibleHeat Current Energy: " + energy);
+
+        current = endWater;
+        LOGGER.finest("[LIQUID-HEATING] Declare Current Temp: " + endWater);
+        
+        LOGGER.info("[LIQUID-HEATING] calling determineLatentHeat using current: " + current + ", target: " + target);
+        energy += determineLatentHeat(current, target);
+        LOGGER.finer("[LIQUID-HEATING] determineLatentHeat Current Energy: " + energy);
+
+        return new EnergyValues(energy, current);
+
+    } else if (checkLiquidCoolingPhase(current, target)) {
+        LOGGER.finest("[LIQUID-COOLING] due to current: " + current + ", target: " + target);
+        double endWater = findMinimunWithMinimunCeiling(target, vaporizationTemp, fusionTemp);
+        
+        specificHeat = determineSpecificHeat(Phase.LIQUID);
+        energy += calculateSensibleHeat(specificHeat, current, endWater);
+        LOGGER.finer("[LIQUID-COOLING] calculateSensibleHeat Current Energy: " + energy);
+
+        current = endWater;
+        LOGGER.finest("[LIQUID-COOLING] Declare Current Temp: " + endWater);
+
+        LOGGER.info("[LIQUID-COOLING] calling determineLatentHeat using current: " + current + ", target: " + target);
+        energy += determineLatentHeat(current, target);
+        LOGGER.finer("[LIQUID-COOLING] determineLatentHeat Current Energy: " + energy);
+        
+        return new EnergyValues(energy, current);
+
+    } else if (checkGasPhase(current, target)) {
+        LOGGER.finest("[GAS] due to current: " + current + ", target: " + target);
+        double endSteam = Math.max(target, vaporizationTemp);
+        
+        specificHeat = determineSpecificHeat(Phase.GAS);
+        energy += calculateSensibleHeat(specificHeat, current, endSteam);
+        LOGGER.finer("[GAS] calculateSensibleHeat Current Energy: " + energy);
+        
+        current = endSteam;
+        LOGGER.finest("[GAS] Declare Current Temp: " + endSteam);
+        
+        LOGGER.info("[GAS] calling determineLatentHeat using current: " + current + ", target: " + target);
+        energy += determineLatentHeat(current, target);
+        LOGGER.finer("[GAS] determineLatentHeat Current Energy: " + energy);
+
+        return new EnergyValues(energy, current);
+
+    } else {
+        throw new IllegalArgumentException("Can't determine correct phase");
+    }
+}
+
     private boolean checkSolidPhase(double current, double target){
         return (current < fusionTemp) || (current <= fusionTemp && target < current);
     }
