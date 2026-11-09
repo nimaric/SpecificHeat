@@ -31,28 +31,9 @@ import java.util.logging.Level;
  */
 public class ThermalCalculator {
     private static final Logger LOGGER = Logger.getLogger(ThermalCalculator.class.getName());
-    private static final double EPSILON = 1e-6;
-    private static final int ITERATION_LIMIT = 30;
-
-    /*
-    FINEST: Level.FINEST
-    FINER: Level.FINER
-    FINE: Level.FINE
-    INFO: Level.INFO
-    WARNING: Level.WARNING // Default
-    SEVERE: Level.SEVERE
-    */
-    /**
-     * Set the verbosity for logging
-     * 
-     * FINEST: Level.FINEST
-     * FINER: Level.FINER
-     * FINE: Level.FINE
-     * INFO: Level.INFO
-     * WARNING: Level.WARNING // Default
-     * SEVERE: Level.SEVERE
-     */
-    public static final Level LOGGER_LEVEL = Level.WARNING; // Change this Variable for testing (DEFAULT: Level.WARNING)
+    private static final Level LOGGER_LEVEL = Constants.getLoggerLevel();
+    private static final double EPSILON = Constants.getEpsilon();
+    private static final int ITERATION_LIMIT = Constants.getIterationLimit();
     private double mass;
     private double initialTemp;
     private double finalTemp;
