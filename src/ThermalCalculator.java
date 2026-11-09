@@ -204,9 +204,8 @@ public class ThermalCalculator {
             );
         }
     }
-    private double calculateSensibleHeat(double initialTemp, double finalTemp, Phase phase){
-        LOGGER.info("Calculating sensible heat -> Mass: " + mass + ", InitialT: " + initialTemp + ", FinalT: " + finalTemp + ", Phase: " + phase);
 
+    private double determineSpecificHeat(Phase phase){
         double specificHeat;
         switch(phase) {
             case SOLID -> specificHeat = material.cSolid;
@@ -217,6 +216,12 @@ public class ThermalCalculator {
                 throw new IllegalArgumentException("Unknown phase");
             }
         }
+        return specificHeat;
+    }
+
+    private double calculateSensibleHeat(double specificHeat, double initialTemp, double finalTemp){
+        LOGGER.info("Calculating sensible heat -> Mass: " + mass + ", InitialT: " + initialTemp + ", FinalT: " + finalTemp);
+
         double result = mass * specificHeat * (finalTemp - initialTemp);
         LOGGER.fine("Sensible heat result: " + result);
         return result;
