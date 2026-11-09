@@ -189,12 +189,20 @@ public class ThermalCalculator {
                 LOGGER.info("[GAS] calling determineLatentHeat using current: " + current + ", target: " + target);
                 energy += determineLatentHeat(current, target);
                 LOGGER.finer("[GAS] determineLatentHeat Current Energy: " + energy);
-            } 
-        }
+    private boolean checkSolidPhase(double current, double target){
+        return (current < fusionTemp) || (current <= fusionTemp && target < current);
+    }
 
-        System.out.printf("\nCurrent Energy Stored: %.2f Joules%n", energy);
-        LOGGER.finest("Sucessfully printed Energy Stored: " + energy);
-        return energy;
+    private boolean checkLiquidHeatingPhase(double current, double target){
+        return ((current >= fusionTemp && current < vaporizationTemp && target > current));
+    }
+
+    private boolean checkLiquidCoolingPhase(double current, double target){
+        return (current > fusionTemp && current <= vaporizationTemp && target < current);
+    }
+
+    private boolean checkGasPhase(double current, double target){
+        return (current >= vaporizationTemp && target > current) || (current > vaporizationTemp);
     }
 
     private void checkIterationLimit(int iteration) {
