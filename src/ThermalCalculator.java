@@ -157,7 +157,7 @@ public class ThermalCalculator {
 
             if ((current >= fusionTemp && current < vaporizationTemp && target > current)) {
                 LOGGER.finest("[LIQUID-HEATING] due to current: " + current + ", target: " + target);
-                double endWater = Math.max(Math.min(target, vaporizationTemp), fusionTemp);
+                double endWater = findMinimunWithMinimunCeiling(target, vaporizationTemp, fusionTemp);
                 energy += calculateSensibleHeat(current, endWater, Phase.LIQUID);
                 LOGGER.finer("[LIQUID-HEATING] calculateSensibleHeat Current Energy: " + energy);
                 current = endWater;
@@ -169,7 +169,7 @@ public class ThermalCalculator {
 
             if ((current > fusionTemp && current <= vaporizationTemp && target < current)) {
                 LOGGER.finest("[LIQUID-COOLING] due to current: " + current + ", target: " + target);
-                double endWater = Math.max(Math.min(target, vaporizationTemp), fusionTemp);
+                double endWater = findMinimunWithMinimunCeiling(target, vaporizationTemp, fusionTemp);
                 energy += calculateSensibleHeat(current, endWater, Phase.LIQUID);
                 LOGGER.finer("[LIQUID-COOLING] calculateSensibleHeat Current Energy: " + energy);
                 current = endWater;
@@ -334,5 +334,17 @@ static {
         boolean equal = Math.abs(a - b) < EPSILON;
         LOGGER.finest(a + " and " + b + " equality is " + equal);
         return equal;
+    }
+
+    /*
+     findMinimunWithMinimunCeiling
+     - find the minimun of a & b
+     - compare the minimun with c
+     - choose the maximun between the minimun and c
+     - useful when choosing the absolute minimun breaks calculation due to sensible heat being calculated improperly
+    */
+    private double findMinimunWithMinimunCeiling(double a, double b, double c){
+        double value = Math.max(Math.min(a, b), c);
+        return value;
     }
 }
