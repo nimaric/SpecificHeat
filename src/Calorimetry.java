@@ -18,18 +18,16 @@ public class Calorimetry {
         Q_AthermalCalculator.setFinalTemp(finalTemp);
         double energyTotal = Q_AthermalCalculator.calculateEnergyRequired();
 
-        double a = -energyTotal;
 
-
-        double specificHeat = a / (mass * (finalTemp - initialTemp));
+        double specificHeat = findSpecificHeat(-energyTotal, mass, finalTemp, initialTemp);
 
         System.out.printf("Specific Heat: %.2f J/gc%n", specificHeat);
 
-        /* 
-        EnergyValues values = Q_AthermalCalculator.determinePhaseChange(162.9 , finalTemp);
-        System.out.println(values.getEnergy());
-        */
-        
+    }
+
+    public static double findSpecificHeat(double totalEnergy, double mass, double finalTemp, double initialTemp){
+        double specificHeat = totalEnergy / (mass * (finalTemp - initialTemp));
+        return specificHeat;
     }
 }
 
