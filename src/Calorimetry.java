@@ -1,28 +1,41 @@
 package src;
 
+import java.util.Scanner;
+
 // Assumption: Qa = -Qb or Qmetal = -Qwater 
 
 public class Calorimetry {
-    private static final Materials Q_A = Materials.WATER;
-    // private static Materials Q_B = Materials.COPPER;
-
     public static void main(String[] args) {
-        ThermalCalculator Q_AthermalCalculator = new ThermalCalculator(Q_A);
-        double finalTemp = 64.7;
+        Scanner scanner = new Scanner(System.in);
 
-        double mass = 23.0;
-        double initialTemp = 162.9;
+        System.out.println("Enter material name: ");
+        String inputMaterialName = scanner.nextLine();
+        Materials knownMaterialProperty = Materials.getMaterial(inputMaterialName);
 
-        Q_AthermalCalculator.setMass(50);
-        Q_AthermalCalculator.setInitialTemp(55);
-        Q_AthermalCalculator.setFinalTemp(finalTemp);
-        double energyTotal = Q_AthermalCalculator.calculateEnergyRequired();
+        System.out.println("Enter unknown material's mass: ");
+        double unknownMass = scanner.nextDouble();
 
+        System.out.println("Enter known material's mass: ");
+        double knownMass = scanner.nextDouble();
 
-        double specificHeat = findSpecificHeat(-energyTotal, mass, finalTemp, initialTemp);
+        System.out.println("Enter known material's initial Temp: ");
+        double knownInitalTemp = scanner.nextDouble();
 
-        System.out.printf("Specific Heat: %.2f J/gc%n", specificHeat);
+        System.out.println("Enter unknown initial's temp: ");
+        double unknownInitialTemp = scanner.nextDouble();
 
+        System.out.println("Enter final temp: ");
+        double bothMaterialFinalTemp = scanner.nextDouble();
+
+        scanner.close(); 
+
+        // Using a known material, we find the energy it gains or loses.
+        double energyTotal = calculateCalorimetry(knownMass, knownInitalTemp, bothMaterialFinalTemp, knownMaterialProperty);
+
+        // Using the inverse of the energyTotal, we can find the specific heat of the unknown material if we know mc/deltaT
+        double unknownSpecificHeat = findSpecificHeat(-energyTotal, unknownMass, bothMaterialFinalTemp, unknownInitialTemp);
+
+        System.out.printf("Specific Heat: %.2f J/gc%n", unknownSpecificHeat);
     }
 
     public static double findSpecificHeat(double totalEnergy, double mass, double finalTemp, double initialTemp){
