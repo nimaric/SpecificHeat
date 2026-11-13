@@ -29,5 +29,14 @@ public class Calorimetry {
         double specificHeat = totalEnergy / (mass * (finalTemp - initialTemp));
         return specificHeat;
     }
+
+    private static double calculateCalorimetry(double mass, double initialTemp, double finalTemp, Materials knownMaterialProperty){
+        ThermalCalculator thermalCalculator = new ThermalCalculator(knownMaterialProperty);
+        thermalCalculator.setMass(mass);
+        thermalCalculator.setInitialTemp(initialTemp);
+        thermalCalculator.setFinalTemp(finalTemp);
+        double energyTotal = thermalCalculator.calculateEnergyRequired();
+        return energyTotal;
+    }
 }
 
