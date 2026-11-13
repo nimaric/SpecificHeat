@@ -267,46 +267,32 @@ static {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Enter material name: ");
-        LOGGER.finest("Asking for: material");
-
         String inputMaterialName = scanner.nextLine();
 
         Materials materialProperty = Materials.getMaterial(inputMaterialName);
-        LOGGER.finest("Created materialProperty with " + inputMaterialName);
-
 
         System.out.println("Enter mass (g), initial temp (°C), and final temp (°C):");
-        LOGGER.finest("Moved on to asking for: mass");
         double mass = scanner.nextDouble();
-        LOGGER.finest("Moved on to asking for: t_i");
         double t_i = scanner.nextDouble();
-        LOGGER.finest("Moved on to asking for: t_f");
         double t_f = scanner.nextDouble();
 
         ThermalCalculator calculateEnergy = new ThermalCalculator(materialProperty);
-        LOGGER.finest("Created calculator with material: " + "Materials.WATER");
         calculateEnergy.setMass(mass);
-        LOGGER.finest("Set the material's mass: " + mass);
         calculateEnergy.setInitialTemp(t_i);
-        LOGGER.finest("Set the material's initial Temp: " + t_i);
         calculateEnergy.setFinalTemp(t_f);
-        LOGGER.finest("Set the material's final Temp: " + t_f);
 
         // Close scanner as parameters are all inputted
         scanner.close(); 
 
         // Calculate using provided parameters to display
         double totalEnergy = calculateEnergy.calculateEnergyRequired();
-        LOGGER.finest("Received totalEnergy: " + totalEnergy);
 
         // Display results
         System.out.printf("\nTotal Energy Required: %.2f Joules%n", totalEnergy);
-        LOGGER.finest("Printed out totalEnergy: " + totalEnergy);
     }
 
     private boolean approximatelyEquals(double a, double b) {
         boolean equal = Math.abs(a - b) < EPSILON;
-        LOGGER.finest(a + " and " + b + " equality is " + equal);
         return equal;
     }
 
