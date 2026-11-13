@@ -52,9 +52,29 @@ public class ThermalCalculator {
    */
   public ThermalCalculator(Materials material) {
     this.material = material;
+<<<<<<< HEAD
 
     this.fusionTemp = material.fusionTemp;
     this.vaporizationTemp = material.vaporizationTemp;
+=======
+    LOGGER.finest("Declare a new material: " + material.name);
+
+    // Declares fusion and vaporization temps
+    this.fusionTemp = material.fusionTemp;
+    LOGGER.finest("Declare Fusion Temp: " + fusionTemp);
+    this.vaporizationTemp = material.vaporizationTemp;
+    LOGGER.finest("Declare Vaporization Temp: " + vaporizationTemp);
+
+    // Declares material.name for logging
+    LOGGER.finer(
+      "Generated Material: " +
+        material.name +
+        " Fusion Temp: " +
+        fusionTemp +
+        " Vaporization Temp: " +
+        vaporizationTemp
+    );
+>>>>>>> 4bcd676 (style: rerun prettier on codebase)
   }
 
   /**
