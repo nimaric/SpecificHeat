@@ -49,16 +49,9 @@ public class ThermalCalculator {
      */
     public ThermalCalculator(Materials material) {
         this.material = material;
-        LOGGER.finest("Declare a new material: " + material.name);
 
-        // Declares fusion and vaporization temps
         this.fusionTemp = material.fusionTemp;
-        LOGGER.finest("Declare Fusion Temp: " + fusionTemp);
         this.vaporizationTemp = material.vaporizationTemp;
-        LOGGER.finest("Declare Vaporization Temp: " + vaporizationTemp);
-
-        // Declares material.name for logging
-        LOGGER.finer("Generated Material: " + material.name + " Fusion Temp: " + fusionTemp + " Vaporization Temp: " + vaporizationTemp);
     }
 
     /**
@@ -68,7 +61,6 @@ public class ThermalCalculator {
      */
     public void setMass(double mass) {
         this.mass = mass;
-        LOGGER.finest("Declare mass: " + mass);
     }
 
     /**
@@ -78,7 +70,6 @@ public class ThermalCalculator {
      */
     public void setInitialTemp(double initialTemp) {
         this.initialTemp = initialTemp;
-        LOGGER.finest("Declare Initial Temp: " + initialTemp);
     }
 
     /**
@@ -88,7 +79,6 @@ public class ThermalCalculator {
      */
     public void setFinalTemp(double finalTemp) {
         this.finalTemp = finalTemp;
-        LOGGER.finest("Declare Final Temp: " + finalTemp);
     }
 
     /**
@@ -101,17 +91,13 @@ public class ThermalCalculator {
         System.out.printf("\nTotal Mass: %.2f Grams%n", mass);
         System.out.printf("Initial Temperature: %.2f Celsius%n", initialTemp);
         System.out.printf("Final Temperature: %.2f Celsius%n", finalTemp);
-        LOGGER.finest("Printed out values of: mass: " + mass + " initialTemp: " + initialTemp + " finalTemp: " + finalTemp);
         
         InputValidator.validate(mass, initialTemp, finalTemp);
-        LOGGER.finest("Sucessfully Validated: mass: " + mass + " initialTemp: " + initialTemp + " finalTemp: " + finalTemp);
         
         double energy = 0.0;
-        LOGGER.finest("Initialied energy: " + energy);
         double current = initialTemp;
-        LOGGER.finest("Initialied current: " + current);
         double target = finalTemp;
-        LOGGER.finest("Initialied target: " + target);
+
 
         int i = 0;
         while (!approximatelyEquals(current, target)) {
@@ -120,19 +106,15 @@ public class ThermalCalculator {
             i++;
 
             if (approximatelyEquals(initialTemp, fusionTemp) || approximatelyEquals(initialTemp, vaporizationTemp)) {
-                LOGGER.info("[INITIAL] calling determineLatentHeat using current: " + current + ", target: " + target);
                 energy += determineLatentHeat(current, target);
             }
 
             if (!approximatelyEquals(current, target)){
                 energy += determinePhaseChange(current, target).getEnergy();
-                LOGGER.fine("determinePhaseChange energy: " + energy);
                 current = determinePhaseChange(current, target).getCurrentTemp();
-                LOGGER.fine("determinePhaseChange current: " + current);
             }
         }
         System.out.printf("\nCurrent Energy Stored: %.2f Joules%n", energy);
-        LOGGER.finest("Sucessfully printed Energy Stored: " + energy);
         return energy;
     }
 
@@ -141,73 +123,42 @@ public class ThermalCalculator {
     double specificHeat;
 
     if (checkSolidPhase(current, target)) {
-        LOGGER.finest("[SOLID] due to current: " + current + ", target: " + target);
         double endIce = Math.min(target, fusionTemp);
 
         specificHeat = determineSpecificHeat(Phase.SOLID);
         energy += calculateSensibleHeat(specificHeat, current, endIce);
-        LOGGER.finer("[SOLID] calculateSensibleHeat Current Energy: " + energy);
 
         current = endIce;
-        LOGGER.finest("[SOLID] Declare Current Temp: " + endIce);
-
-        LOGGER.info("[SOLID] calling determineLatentHeat using current: " + current + ", target: " + target);
         energy += determineLatentHeat(current, target);
-        LOGGER.finer("[SOLID] determineLatentHeat Current Energy: " + energy);
-
         return new EnergyValues(energy, current);
-
     } else if (checkLiquidHeatingPhase(current, target)) {
-        LOGGER.finest("[LIQUID-HEATING] due to current: " + current + ", target: " + target);
         double endWater = findMinimunWithMinimunCeiling(target, vaporizationTemp, fusionTemp);
 
         specificHeat = determineSpecificHeat(Phase.LIQUID);
         energy += calculateSensibleHeat(specificHeat, current, endWater);
-        LOGGER.finer("[LIQUID-HEATING] calculateSensibleHeat Current Energy: " + energy);
 
         current = endWater;
-        LOGGER.finest("[LIQUID-HEATING] Declare Current Temp: " + endWater);
-        
-        LOGGER.info("[LIQUID-HEATING] calling determineLatentHeat using current: " + current + ", target: " + target);
         energy += determineLatentHeat(current, target);
-        LOGGER.finer("[LIQUID-HEATING] determineLatentHeat Current Energy: " + energy);
-
         return new EnergyValues(energy, current);
-
     } else if (checkLiquidCoolingPhase(current, target)) {
-        LOGGER.finest("[LIQUID-COOLING] due to current: " + current + ", target: " + target);
         double endWater = findMinimunWithMinimunCeiling(target, vaporizationTemp, fusionTemp);
         
         specificHeat = determineSpecificHeat(Phase.LIQUID);
         energy += calculateSensibleHeat(specificHeat, current, endWater);
-        LOGGER.finer("[LIQUID-COOLING] calculateSensibleHeat Current Energy: " + energy);
 
         current = endWater;
-        LOGGER.finest("[LIQUID-COOLING] Declare Current Temp: " + endWater);
-
-        LOGGER.info("[LIQUID-COOLING] calling determineLatentHeat using current: " + current + ", target: " + target);
         energy += determineLatentHeat(current, target);
-        LOGGER.finer("[LIQUID-COOLING] determineLatentHeat Current Energy: " + energy);
-        
         return new EnergyValues(energy, current);
 
     } else if (checkGasPhase(current, target)) {
-        LOGGER.finest("[GAS] due to current: " + current + ", target: " + target);
         double endSteam = Math.max(target, vaporizationTemp);
         
         specificHeat = determineSpecificHeat(Phase.GAS);
         energy += calculateSensibleHeat(specificHeat, current, endSteam);
-        LOGGER.finer("[GAS] calculateSensibleHeat Current Energy: " + energy);
         
         current = endSteam;
-        LOGGER.finest("[GAS] Declare Current Temp: " + endSteam);
-        
-        LOGGER.info("[GAS] calling determineLatentHeat using current: " + current + ", target: " + target);
         energy += determineLatentHeat(current, target);
-        LOGGER.finer("[GAS] determineLatentHeat Current Energy: " + energy);
-
         return new EnergyValues(energy, current);
-
     } else {
         throw new IllegalArgumentException("Can't determine correct phase");
     }
@@ -231,6 +182,7 @@ public class ThermalCalculator {
 
     private void checkIterationLimit(int iteration) {
         if (iteration > ITERATION_LIMIT) {
+            LOGGER.severe("Iteration Limit of " + ITERATION_LIMIT + " has been hit");
             throw new IllegalStateException(
                 "Hit " + ITERATION_LIMIT + " limit of phase calculation"
             );
@@ -252,32 +204,25 @@ public class ThermalCalculator {
     }
 
     private double calculateSensibleHeat(double specificHeat, double initialTemp, double finalTemp){
-        LOGGER.info("Calculating sensible heat -> Mass: " + mass + ", InitialT: " + initialTemp + ", FinalT: " + finalTemp);
 
         double result = mass * specificHeat * (finalTemp - initialTemp);
-        LOGGER.fine("Sensible heat result: " + result);
         return result;
     }
 
     private double calculateLatentHeat(double initialTemp, double finalTemp, Phase phase){
-        LOGGER.info("Calculating latent heat -> Mass: " + mass + ", InitialT: " + initialTemp + ", FinalT: " + finalTemp + ", Phase: " + phase);
-
         double latentHeat;
         switch(phase) {
             case FUSION -> latentHeat = material.latentFusion;
             case VAPORIZATION -> latentHeat = material.latentVaporization;
             default -> {
-                LOGGER.warning("Unknown phase encountered: " + phase);
+                LOGGER.severe("Unknown phase encountered: " + phase);
                 throw new IllegalArgumentException("Unknown phase");
             }
         }
 
         if (initialTemp < finalTemp){ 
-            LOGGER.fine("Calculating latent heat being absorbed");
             return mass * latentHeat; 
-        }
-        if (initialTemp > finalTemp){ 
-            LOGGER.fine("Calculating latent heat being released");
+        } else if (initialTemp > finalTemp){ 
             return mass * -latentHeat; 
         } else {
             LOGGER.severe("Unable to register phase transition of " + phase + " using initialTemp: " + initialTemp + " and finalTemp: " + finalTemp);
@@ -288,27 +233,19 @@ public class ThermalCalculator {
     // Determines which phase is correct.
     private double determineLatentHeat(double current, double target){
         double energy = 0.0;
-        LOGGER.finest("Initialied energy: " + energy);
         boolean phaseChange = approximatelyEquals(current, fusionTemp) || approximatelyEquals(current, vaporizationTemp);
-        LOGGER.finest("Initialied phaseChange: " + phaseChange);
         
         if (approximatelyEquals(current, target)) {
-            LOGGER.fine("There is no need for calculateLatentHeat() because current = target.");
             return energy; 
         }
 
         if (phaseChange){
             if (approximatelyEquals(current, fusionTemp)) {
-                LOGGER.fine("Using Phase.FUSION for calculateLatentHeat()");
                 energy += calculateLatentHeat(current, target, Phase.FUSION);
             } else if (approximatelyEquals(current, vaporizationTemp)) {
-                LOGGER.fine("Using Phase.VAPORIZATION for calculateLatentHeat()");
                 energy += calculateLatentHeat(current, target, Phase.VAPORIZATION);
             }
-        } else {
-            LOGGER.fine("There is no need for calculateLatentHeat(). phaseChange: " + phaseChange);
         }
-
         return energy;
     }
 
