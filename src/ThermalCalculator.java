@@ -37,11 +37,7 @@ public class ThermalCalculator {
   private static final Level LOGGER_LEVEL = Constants.getLoggerLevel();
   private static final double EPSILON = Constants.getEpsilon();
   private static final int ITERATION_LIMIT = Constants.getIterationLimit();
-  private double mass;
-  private double initialTemp;
-  private double finalTemp;
-  private double fusionTemp;
-  private double vaporizationTemp;
+  private double mass, initialTemp, finalTemp, fusionTemp, vaporizationTemp;
 
   private final Materials material;
 
@@ -97,9 +93,7 @@ public class ThermalCalculator {
 
     InputValidator.validate(mass, initialTemp, finalTemp);
 
-    double energy = 0.0;
-    double current = initialTemp;
-    double target = finalTemp;
+    double energy = 0.0, current = initialTemp, target = finalTemp;
 
     int i = 0;
     while (!approximatelyEquals(current, target)) {
@@ -124,8 +118,7 @@ public class ThermalCalculator {
   }
 
   public EnergyValues determinePhaseChange(double current, double target) {
-    double energy = 0.0;
-    double specificHeat;
+    double energy = 0.0, specificHeat;
 
     if (checkSolidPhase(current, target)) {
       double endIce = Math.min(target, fusionTemp);

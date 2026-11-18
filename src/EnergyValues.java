@@ -9,8 +9,7 @@ package src;
 
 public class EnergyValues {
 
-  private final double energy;
-  private final double currentTemp;
+  private final double energy, currentTemp;
 
   public EnergyValues(double energy, double currentTemp) {
     this.energy = energy;
