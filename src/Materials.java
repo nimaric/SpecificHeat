@@ -19,17 +19,13 @@ public class Materials {
   String name;
 
   // Specific Heats (J / g * °C)
-  double cSolid;
-  double cLiquid;
-  double cGas;
+  double cSolid, cLiquid, cGas;
 
   // Phase Transition Temperatures (°C)
-  double fusionTemp;
-  double vaporizationTemp;
+  double fusionTemp, vaporizationTemp;
 
   // Latent Heats (J / g)
-  double latentFusion;
-  double latentVaporization;
+  double latentFusion, latentVaporization;
 
   public Materials(
     String name,
