@@ -5,8 +5,6 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-package src;
-
 public class EnergyValues {
 
   private final double energy, currentTemp;

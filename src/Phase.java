@@ -5,8 +5,6 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-package src;
-
 /**
  * Represents the different phases of matter and their transitions.
  */

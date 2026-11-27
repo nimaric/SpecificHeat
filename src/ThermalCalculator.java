@@ -18,8 +18,6 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package src;
-
 import java.util.Scanner;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;

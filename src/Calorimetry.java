@@ -1,5 +1,3 @@
-package src;
-
 import java.util.Scanner;
 
 // Assumption: Qa = -Qb or Qmetal = -Qwater
