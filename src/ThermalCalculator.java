@@ -105,7 +105,9 @@ public class ThermalCalculator {
 
     InputValidator.validate(mass, initialTemp, finalTemp);
 
-    double energy = 0.0, current = initialTemp, target = finalTemp;
+    double energy = 0.0,
+      current = initialTemp,
+      target = finalTemp;
 
     int i = 0;
     while (!approximatelyEquals(current, target)) {
@@ -130,7 +132,8 @@ public class ThermalCalculator {
   }
 
   public EnergyValues determinePhaseChange(double current, double target) {
-    double energy = 0.0, specificHeat;
+    double energy = 0.0,
+      specificHeat;
 
     if (checkSolidPhase(current, target)) {
       double endIce = Math.min(target, fusionTemp);
