@@ -31,13 +31,13 @@ public class Calorimetry {
     scanner.close();
 
     // Using a known material, we find the energy it gains or loses.
-    ThermalCalculatorUtil thermalCalculatorUtil = new ThermalCalculatorUtil();
-    thermalCalculatorUtil.setKnownMaterialProperty(knownMaterialProperty);
-    double energyTotal = thermalCalculatorUtil.calculateEnergyRequired(
+    ThermalCalculator thermalCalculator = new ThermalCalculator(
+      knownMaterialProperty,
       knownMass,
       knownInitalTemp,
       bothMaterialFinalTemp
     );
+    double energyTotal = thermalCalculator.calculateEnergyRequired();
 
     // Using the inverse of the energyTotal, we can find the specific heat of the unknown material if we know mc/deltaT
     double unknownSpecificHeat = findSpecificHeat(
