@@ -11,14 +11,10 @@
  * Reviewed and maintained by the project author.
  */
 
-package test.property;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
-import src.Materials;
-import src.ThermalCalculator;
 
 class EnergyPropertiesTest {
 

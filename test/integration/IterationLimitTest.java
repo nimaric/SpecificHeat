@@ -11,14 +11,10 @@
  * Reviewed and maintained by the project author.
  */
 
-package test.integration;
-
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import src.Materials;
-import src.ThermalCalculator;
 
 public class IterationLimitTest {
 
